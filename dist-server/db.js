@@ -4,14 +4,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_PATH = path.join(__dirname, 'products.json');
-try {
-    if (!fs.existsSync(DB_PATH)) {
-        const defaultData = path.join(__dirname, '..', 'server', 'products.json');
-        if (fs.existsSync(defaultData)) {
-            fs.copyFileSync(defaultData, DB_PATH);
-        }
-    }
-} catch (e) {}
 export const getProducts = () => {
     try {
         if (!fs.existsSync(DB_PATH)) {

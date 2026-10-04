@@ -2,7 +2,8 @@ $ftpBase = "ftp://163.223.227.8/"
 $user = "deployer@kedaigadget.web.id"
 $pass = "Naran@1303"
 $cred = New-Object System.Net.NetworkCredential($user, $pass)
-$localDist = Join-Path $PSScriptRoot "dist"
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$localDist = Join-Path $projectRoot "dist"
 
 Write-Host ">>> Memulai upload ke kedaigadget.web.id..." -ForegroundColor Cyan
 
@@ -37,6 +38,7 @@ function Upload-FtpFile($localFilePath, $remoteRelativePath) {
     $resp.Close()
 }
 
+# 1. Upload Frontend (public_html)
 $files = Get-ChildItem -Path $localDist -Recurse -File
 foreach ($f in $files) {
     $rel = $f.FullName.Substring($localDist.Length).TrimStart("\")
@@ -52,4 +54,24 @@ foreach ($f in $files) {
     Upload-FtpFile $f.FullName $rel
 }
 
-Write-Host ">>> DEPLOY SELESAI! Website berhasil diperbarui." -ForegroundColor Green
+# 2. Upload Backend Files Otomatis
+Write-Host ">>> Mengunggah file backend terbaru..." -ForegroundColor Cyan
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$dirsToCreate = @("dist-server/", "server/")
+foreach ($d in $dirsToCreate) {
+    Ensure-FtpDirectory $d
+}
+
+$backendFiles = Get-ChildItem -Path (Join-Path $projectRoot "dist-server") -File
+foreach ($f in $backendFiles) {
+    Upload-FtpFile $f.FullName ("dist-server/" + $f.Name)
+}
+
+$serverJson = Join-Path $projectRoot "server\products.json"
+if (Test-Path $serverJson) {
+    Upload-FtpFile $serverJson "server/products.json"
+}
+Upload-FtpFile (Join-Path $projectRoot "package.json") "package.json"
+Upload-FtpFile (Join-Path $projectRoot "package-lock.json") "package-lock.json"
+
+Write-Host ">>> DEPLOY SELESAI! Frontend & Backend berhasil diperbarui secara otomatis." -ForegroundColor Green

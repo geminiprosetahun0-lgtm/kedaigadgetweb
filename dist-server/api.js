@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { getProducts, addProduct, toggleProductStock, deleteProduct, saveProducts } from './db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DIST_PATH = path.join(__dirname, '..', '..', 'public_html');
+const DIST_PATH = path.join(__dirname, '..', 'dist');
 export const createApiServer = () => {
     const app = express();
     app.use(cors());
