@@ -91,8 +91,8 @@ export const createApiServer = () => {
     res.json({ success: true, message: 'Produk berhasil dihapus' });
   });
 
-  // Fallback route for SPA React router
-  app.get('*', (req, res) => {
+  // Fallback route for SPA React router (Express v5 wildcard syntax)
+  app.get('/(.*)', (req, res) => {
     const indexHtml = path.join(DIST_PATH, 'index.html');
     res.sendFile(indexHtml);
   });
