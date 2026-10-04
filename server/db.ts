@@ -4,7 +4,19 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_PATH = path.join(__dirname, 'products.json');
+
+// Ensure path resolves to server/products.json or local products.json
+const getDbPath = () => {
+  const p1 = path.join(__dirname, 'products.json');
+  const p2 = path.join(__dirname, '..', 'server', 'products.json');
+  const p3 = path.join(__dirname, 'server', 'products.json');
+  if (fs.existsSync(p1)) return p1;
+  if (fs.existsSync(p2)) return p2;
+  if (fs.existsSync(p3)) return p3;
+  return p1;
+};
+
+const DB_PATH = getDbPath();
 
 export interface ProductItem {
   id: string;

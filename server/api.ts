@@ -93,7 +93,11 @@ export const createApiServer = () => {
 
   // Health check
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', server: 'kedai-gadget-api' });
+    res.json({
+      status: 'ok',
+      version: 'v2-resmi-ibox',
+      server: 'kedai-gadget-api'
+    });
   });
 
   return app;
