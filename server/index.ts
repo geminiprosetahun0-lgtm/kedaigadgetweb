@@ -4,7 +4,7 @@ import { createTelegramBot } from './bot.js';
 
 dotenv.config();
 
-const PORT = process.env.API_PORT || 4000;
+const PORT = process.env.PORT || process.env.API_PORT || 4000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 
 const app = createApiServer();

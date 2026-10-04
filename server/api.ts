@@ -1,12 +1,21 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { getProducts, addProduct, toggleProductStock, deleteProduct, saveProducts } from './db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DIST_PATH = path.join(__dirname, '..', 'dist');
 
 export const createApiServer = () => {
   const app = express();
 
   app.use(cors());
   app.use(express.json());
+
+  // Serve static assets from frontend build
+  app.use(express.static(DIST_PATH));
 
   // GET /api/products
   app.get('/api/products', (req, res) => {
@@ -80,6 +89,12 @@ export const createApiServer = () => {
       return res.status(404).json({ error: 'Produk tidak ditemukan' });
     }
     res.json({ success: true, message: 'Produk berhasil dihapus' });
+  });
+
+  // Fallback route for SPA React router
+  app.get('*', (req, res) => {
+    const indexHtml = path.join(DIST_PATH, 'index.html');
+    res.sendFile(indexHtml);
   });
 
   return app;
