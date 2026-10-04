@@ -233,27 +233,21 @@ export const createTelegramBot = (token) => {
             session.step = 5;
             await ctx.answerCbQuery();
             await ctx.replyWithMarkdown(`🛡️ *[Langkah 5/9]* Pilih *Status Garansi / Legalitas IMEI*:`, Markup.inlineKeyboard([
-                [Markup.button.callback('Resmi iBox Indonesia (PA/A)', 'war_ibox')],
-                [Markup.button.callback('Resmi Digimap Indonesia', 'war_digimap')],
-                [Markup.button.callback('Inter All Operator (Sinyal On)', 'war_interallop')],
-                [Markup.button.callback('Inter All Provider Bea Cukai Aktif', 'war_beacukai')],
-                [Markup.button.callback('Kemenperin Aktif All Provider', 'war_kemenperin')],
+                [Markup.button.callback('Resmi IBOX', 'war_ibox')],
+                [Markup.button.callback('Resmi Beacukai', 'war_beacukai')],
+                [Markup.button.callback('Inter All Operator', 'war_interallop')],
             ]));
             return;
         }
         // Step 5 -> Select Warranty: Gives Battery Health Quick Selection
         if (callbackData.startsWith('war_')) {
-            let warrantyText = 'Resmi iBox Indonesia';
+            let warrantyText = 'Resmi IBOX';
             if (callbackData === 'war_ibox')
-                warrantyText = 'Resmi iBox Indonesia (PA/A)';
-            if (callbackData === 'war_digimap')
-                warrantyText = 'Resmi Digimap Indonesia';
+                warrantyText = 'Resmi IBOX';
+            if (callbackData === 'war_beacukai')
+                warrantyText = 'Resmi Beacukai';
             if (callbackData === 'war_interallop')
                 warrantyText = 'Inter All Operator';
-            if (callbackData === 'war_beacukai')
-                warrantyText = 'Inter Bea Cukai All Provider';
-            if (callbackData === 'war_kemenperin')
-                warrantyText = 'Kemenperin Aktif All Provider';
             session.data.warranty = warrantyText;
             session.step = 6;
             await ctx.answerCbQuery();
