@@ -235,6 +235,7 @@ export const createTelegramBot = (token) => {
             await ctx.replyWithMarkdown(`🛡️ *[Langkah 5/9]* Pilih *Status Garansi / Legalitas IMEI*:`, Markup.inlineKeyboard([
                 [Markup.button.callback('Resmi iBox Indonesia (PA/A)', 'war_ibox')],
                 [Markup.button.callback('Resmi Digimap Indonesia', 'war_digimap')],
+                [Markup.button.callback('Inter All Operator (Sinyal On)', 'war_interallop')],
                 [Markup.button.callback('Inter All Provider Bea Cukai Aktif', 'war_beacukai')],
                 [Markup.button.callback('Kemenperin Aktif All Provider', 'war_kemenperin')],
             ]));
@@ -247,6 +248,8 @@ export const createTelegramBot = (token) => {
                 warrantyText = 'Resmi iBox Indonesia (PA/A)';
             if (callbackData === 'war_digimap')
                 warrantyText = 'Resmi Digimap Indonesia';
+            if (callbackData === 'war_interallop')
+                warrantyText = 'Inter All Operator';
             if (callbackData === 'war_beacukai')
                 warrantyText = 'Inter Bea Cukai All Provider';
             if (callbackData === 'war_kemenperin')

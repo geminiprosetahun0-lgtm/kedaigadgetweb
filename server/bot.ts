@@ -321,6 +321,7 @@ export const createTelegramBot = (token: string) => {
         Markup.inlineKeyboard([
           [Markup.button.callback('Resmi iBox Indonesia (PA/A)', 'war_ibox')],
           [Markup.button.callback('Resmi Digimap Indonesia', 'war_digimap')],
+          [Markup.button.callback('Inter All Operator (Sinyal On)', 'war_interallop')],
           [Markup.button.callback('Inter All Provider Bea Cukai Aktif', 'war_beacukai')],
           [Markup.button.callback('Kemenperin Aktif All Provider', 'war_kemenperin')],
         ])
@@ -333,6 +334,7 @@ export const createTelegramBot = (token: string) => {
       let warrantyText = 'Resmi iBox Indonesia';
       if (callbackData === 'war_ibox') warrantyText = 'Resmi iBox Indonesia (PA/A)';
       if (callbackData === 'war_digimap') warrantyText = 'Resmi Digimap Indonesia';
+      if (callbackData === 'war_interallop') warrantyText = 'Inter All Operator';
       if (callbackData === 'war_beacukai') warrantyText = 'Inter Bea Cukai All Provider';
       if (callbackData === 'war_kemenperin') warrantyText = 'Kemenperin Aktif All Provider';
 
