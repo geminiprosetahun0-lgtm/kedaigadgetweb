@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "server": "tsx server/index.ts",
-    "start": "node --loader tsx server/index.ts",
+    "start": "node dist-server/index.js",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && tsc -p tsconfig.server.json",
+    "deploy": "npm run build && powershell -ExecutionPolicy Bypass -File scripts/deploy-ftp.ps1",
     "lint": "oxlint",
     "preview": "vite preview"
   },
