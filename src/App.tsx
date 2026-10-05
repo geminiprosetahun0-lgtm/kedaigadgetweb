@@ -429,41 +429,22 @@ export const App: React.FC = () => {
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-fixed">
       {/* HEADER */}
-      <header className="fixed top-0 w-full z-50">
-        <div className="bg-primary-container text-surface-bright border-b border-outline/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin h-9 sm:h-10 flex items-center justify-between font-label-sm text-label-sm">
-            <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-              </span>
-              <span className="tracking-wide text-surface-dim truncate text-[11px] sm:text-[13px]">Buka 24 Jam • COD se-Bali</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-space-lg text-surface-dim shrink-0">
-              <span>Penatih, Denpasar Timur</span>
-              <span className="text-outline/40">/</span>
-              <a className="hover:text-surface-bright transition-colors" href="https://www.instagram.com/kedaigadgett" target="_blank" rel="noopener noreferrer">@kedaigadgett</a>
-            </div>
-          </div>
-        </div>
-
+      <header className="sticky top-0 w-full z-50">
         <div className="bg-surface/90 backdrop-blur-xl border-b border-outline-variant/40 shadow-[0_1px_8px_rgba(23,24,26,0.03)]">
-          <div className="h-16 sm:h-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex items-center justify-between gap-3">
+          <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 sm:gap-space-lg min-w-0">
               <a className="flex items-center gap-2 sm:gap-space-md group min-w-0" href="#">
                 <img alt="Kedai Gadget Brand Logo" className="h-8 sm:h-10 w-auto object-contain shrink-0" src="/logo.png" />
                 <div className="flex flex-col min-w-0">
-                  <span className="font-label-sm text-[9px] sm:text-label-sm uppercase tracking-widest text-on-surface-variant font-medium truncate">iPhone Specialist</span>
                   <span className="font-headline-sm text-sm sm:text-headline-sm tracking-tight text-primary font-bold truncate">KEDAI GADGET</span>
                 </div>
               </a>
             </div>
             <nav className="hidden lg:flex items-center gap-space-lg">
-              <a className="py-space-xs transition-colors text-primary border-b-2 border-primary font-semibold font-label-md text-label-md" href="#katalog">Katalog Unit</a>
+              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#katalog">Katalog</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#tukar-tambah">Tukar Tambah</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#jual-iphone">Jual iPhone</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#keunggulan">Keunggulan</a>
-              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#lokasi">Lokasi Toko</a>
             </nav>
             <div className="flex items-center gap-2 shrink-0">
               <button
@@ -474,132 +455,40 @@ export const App: React.FC = () => {
                 <span className="material-symbols-outlined text-[16px] sm:text-[18px]">inventory_2</span>
                 <span className="hidden xs:inline">Kelola</span> Stok
               </button>
-              <div className="flex items-center gap-2 pl-2 border-l border-outline-variant/40">
-                <div className="text-right hidden md:block">
-                  <p className="font-label-sm text-label-sm font-semibold text-primary">Store Service</p>
-                  <p className="font-label-sm text-label-sm text-secondary flex items-center justify-end gap-1">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>Siap Melayani 24 Jam
-                  </p>
-                </div>
-                <img alt="Kedai Gadget" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover ring-1 ring-outline-variant/60" src="/logo.png" />
-              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* MAIN BODY */}
-      <main className="w-full pt-[6.5rem] sm:pt-[7.5rem] bg-surface min-h-[calc(100vh-200px)]">
+      <main className="w-full bg-surface min-h-[calc(100vh-200px)]">
         <div className="flex flex-col w-full">
           {/* Subtle Grain & Dot Atmosphere */}
           <div className="w-full relative overflow-hidden bg-surface">
             <div className="absolute inset-0 pointer-events-none opacity-40 [background-image:radial-gradient(#c6c6ca_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
-            {/* 1. HERO SECTION */}
-            <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin pt-6 sm:pt-space-xl pb-10 sm:pb-space-xl">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-space-xl items-start">
-                {/* Left 7 Columns */}
-                <div className="lg:col-span-7 space-y-4 sm:space-y-space-lg">
-                  <div className="inline-flex items-center gap-space-xs px-2.5 py-1 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] sm:text-label-sm uppercase tracking-widest font-semibold">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                    Atelier Curated Edition • Penatih, Denpasar Timur
-                  </div>
-
-                  <div className="space-y-1">
-                    <h1 className="font-display-lg text-2xl sm:text-headline-lg lg:text-display-lg font-bold text-primary tracking-tight leading-[1.15]">
-                      Koleksi iPhone Pilihan.
-                    </h1>
-                    <p className="font-display-lg text-2xl sm:text-headline-lg lg:text-display-lg font-bold text-outline tracking-tight leading-[1.15]">
-                      Kurasi ketat, garansi transparan.
-                    </p>
-                    <p className="font-display-lg text-2xl sm:text-headline-lg lg:text-display-lg font-bold text-primary tracking-tight leading-[1.15]">
-                      Siap pakai tanpa kompromi.
-                    </p>
-                  </div>
-
-                  <p className="font-body-lg text-sm sm:text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
-                    Penyedia iPhone terpercaya berbasis di Penatih, Denpasar Timur - Bali. Setiap unit sudah lolos quality control ketat dengan battery health prima demi kenyamanan pemakaian jangka panjang. Siap COD seluruh Bali 24 jam nonstop.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1 sm:pt-space-xs">
-                    <a className="inline-flex items-center justify-center gap-space-sm px-5 py-3 rounded bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container active:scale-[0.99] transition-all shadow-md text-center" href="#katalog">
-                      <span className="material-symbols-outlined text-[18px]">devices</span>
-                      Jelajahi Katalog
-                    </a>
-                    <a className="inline-flex items-center justify-center gap-space-xs px-5 py-3 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container active:scale-[0.99] transition-all shadow-sm text-center border border-outline-variant/40" href="#keunggulan">
-                      <span className="material-symbols-outlined text-[18px] text-secondary">verified_user</span>
-                      Keunggulan Layanan
-                    </a>
-                  </div>
-
-                  <div className="pt-2 sm:pt-space-sm grid grid-cols-1 sm:grid-cols-2 gap-2 font-label-sm text-xs text-on-surface">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container-high/60">
-                      <span className="material-symbols-outlined text-secondary text-[16px] shrink-0">verified</span> Sudah Lolos Quality Control
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container-high/60">
-                      <span className="material-symbols-outlined text-secondary text-[16px] shrink-0">task_alt</span> IMEI Terdaftar &amp; Sinyal Permanen
-                    </span>
-                  </div>
+            {/* 1. HERO SECTION (MINIMALIST & DIRECT) */}
+            <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin py-8 sm:py-12">
+              <div className="max-w-3xl space-y-4">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-xs font-semibold">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Kedai Gadget • Penatih, Denpasar Timur
                 </div>
-
-                {/* Right 5 Columns */}
-                <div className="lg:col-span-5 bg-surface-container-lowest rounded-xl p-5 sm:p-space-lg shadow-xl relative overflow-hidden border border-outline-variant/30">
-                  <div className="flex items-center justify-between gap-space-sm pb-4 border-b border-surface-container">
-                    <div className="flex items-center gap-space-sm">
-                      <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded bg-surface-container-low shrink-0" />
-                      <div>
-                        <h3 className="font-headline-sm text-base sm:text-headline-sm text-primary font-bold">Kedai Gadget</h3>
-                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Flagship Atelier &amp; Service Care</p>
-                      </div>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container/50 text-secondary font-label-sm text-[11px] sm:text-label-sm font-medium shrink-0">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                      </span>
-                      Buka 24 Jam
-                    </span>
-                  </div>
-
-                  <div className="space-y-4 py-4">
-                    <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-outline mt-0.5 text-[20px] shrink-0">schedule</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Jam Operasional</p>
-                        <p className="font-body-md text-sm sm:text-body-md text-primary font-medium">24 Jam Nonstop <span className="text-on-surface-variant text-xs">(Buka Setiap Hari)</span></p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-outline mt-0.5 text-[20px] shrink-0">pin_drop</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Area Layanan &amp; COD</p>
-                        <p className="font-body-md text-sm sm:text-body-md text-primary font-medium leading-snug">Penatih, Denpasar Timur, Bali</p>
-                        <p className="font-body-sm text-xs text-on-surface-variant mt-0.5">Sistem Online &amp; COD langsung di tempat se-Bali</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-outline mt-0.5 text-[20px] shrink-0">shield</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Standar Inspeksi &amp; Garansi</p>
-                        <p className="font-body-md text-sm sm:text-body-md text-primary font-medium">QC 32-Titik &amp; Garansi Toko</p>
-                        <p className="font-body-sm text-xs text-secondary font-medium mt-0.5">Cek fisik dan fungsi sepuasnya sebelum transaksi</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <a className="w-full inline-flex items-center justify-center gap-1.5 py-3 px-3 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all" href="#katalog">
-                      <span className="material-symbols-outlined text-[16px]">visibility</span> Lihat Unit Ready Stock
-                    </a>
-                  </div>
-
-                  <div className="mt-4 p-2.5 rounded bg-surface-container-low flex items-center justify-between text-on-surface text-xs">
-                    <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-secondary text-[17px]">verified_user</span>
-                      <span className="font-label-sm text-[11px] sm:text-label-sm">Quality Control</span>
-                    </div>
-                    <span className="font-label-sm text-[11px] sm:text-label-sm font-bold text-secondary">SUDAH LOLOS QC</span>
-                  </div>
+                <h1 className="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-tight">
+                  Katalog iPhone Kurasi Bali.
+                </h1>
+                <p className="font-body-lg text-sm sm:text-base text-on-surface-variant max-w-xl leading-relaxed">
+                  Unit pilihan lolos QC 32-titik, Battery Health prima, IMEI terjamin resmi. Siap COD seluruh Bali 24 jam nonstop.
+                </p>
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all shadow-sm" href="#katalog">
+                    <span className="material-symbols-outlined text-[18px]">devices</span>
+                    Pilih Unit
+                  </a>
+                  <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-surface-container-lowest text-on-surface font-label-md text-xs sm:text-sm hover:bg-surface-container transition-all border border-outline-variant/40" href="#tukar-tambah">
+                    <span className="material-symbols-outlined text-[18px] text-secondary">swap_horiz</span>
+                    Tukar Tambah / Jual
+                  </a>
                 </div>
               </div>
             </section>
@@ -776,99 +665,59 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          {/* 3. SERVICES SECTION: TUKAR TAMBAH & JUAL IPHONE (RINGKAS TEASER CARDS) */}
-          <section className="w-full bg-surface py-8 sm:py-space-xl relative" id="tukar-tambah">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-6 sm:space-y-space-lg">
-              <div className="text-center max-w-2xl mx-auto space-y-1 sm:space-y-space-xs">
-                <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Layanan Cepat &amp; Transparan</span>
-                <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Tukar Tambah &amp; Jual iPhone</h2>
-                <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Penaksiran harga objektif berbasis kondisi riil hardware tanpa potongan terselubung. Proses kilat 15 menit selesai.</p>
+          {/* 3. SERVICES SECTION: TUKAR TAMBAH & JUAL IPHONE */}
+          <section className="w-full bg-surface py-10 sm:py-16" id="tukar-tambah">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
+              <div className="text-center max-w-xl mx-auto space-y-1">
+                <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Layanan Cepat</span>
+                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Tukar Tambah &amp; Jual iPhone</h2>
+                <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Taksiran jujur berbasis kondisi riil. Cek fisik 15 menit langsung beres.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-space-lg items-stretch">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
                 {/* TEASER CARD: TUKAR TAMBAH */}
-                <div className="bg-surface-container-lowest rounded-xl p-6 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30 hover:shadow-lg transition-shadow">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-3 border-b border-surface-container">
-                      <span className="w-12 h-12 rounded-xl bg-secondary-container/50 text-secondary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-[26px]">published_with_changes</span>
-                      </span>
-                      <div>
-                        <h3 className="font-headline-sm text-lg sm:text-headline-sm font-bold text-primary">Tukar Tambah (Trade-In)</h3>
-                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Upgrade iPhone lama ke unit incaran dengan selisih harga terbaik</p>
-                      </div>
+                <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined text-[22px]">swap_horiz</span>
                     </div>
-
-                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant leading-relaxed">
-                      Punya iPhone lama dan ingin beralih ke seri lebih baru? Hitung simulasi penambahan nilai unit Anda secara instan dan dapatkan penawaran harga kompetitif.
-                    </p>
-
-                    <div className="space-y-2 pt-1 font-body-sm text-xs text-on-surface">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Penaksiran jujur berbasis kondisi fisik &amp; Battery Health</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Bebas pilih unit upgrade dari seluruh katalog ready stock</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Bantu pindah data aman saat transaksi COD di tempat</span>
-                      </div>
+                    <div>
+                      <h3 className="font-headline-sm text-lg font-bold text-primary">Tukar Tambah</h3>
+                      <p className="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+                        Tukarkan iPhone lama Anda ke unit lebih baru dengan selisih harga terbaik dan bantuan pindah data.
+                      </p>
                     </div>
                   </div>
-
-                  <div className="pt-6 mt-4 border-t border-surface-container">
+                  <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
                       onClick={() => setIsTradeModalOpen(true)}
-                      className="w-full py-3.5 px-4 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]"
+                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
                     >
-                      <span className="material-symbols-outlined text-[18px]">calculate</span>
+                      <span className="material-symbols-outlined text-[16px]">calculate</span>
                       Mulai Estimasi Tukar Tambah
                     </button>
                   </div>
                 </div>
 
                 {/* TEASER CARD: JUAL IPHONE */}
-                <div className="bg-surface-container-lowest rounded-xl p-6 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30 hover:shadow-lg transition-shadow" id="jual-iphone">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-3 border-b border-surface-container">
-                      <span className="w-12 h-12 rounded-xl bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-[26px]">payments</span>
-                      </span>
-                      <div>
-                        <h3 className="font-headline-sm text-lg sm:text-headline-sm font-bold text-primary">Jual iPhone Anda</h3>
-                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Pencairan dana instan tanpa ribet negosiasi panjang</p>
-                      </div>
+                <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors" id="jual-iphone">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined text-[22px]">payments</span>
                     </div>
-
-                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant leading-relaxed">
-                      Mau jual iPhone cepat dengan harga pantas? Kami menerima unit resmi iBox maupun Bea Cukai dengan verifikasi kilat 10-15 menit langsung cair.
-                    </p>
-
-                    <div className="space-y-2 pt-1 font-body-sm text-xs text-on-surface">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Pembayaran tunai / transfer instan (BCA, Mandiri, BRI) di tempat</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Menerima kondisi mulus fullset maupun unit only (batangan)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
-                        <span>Inspeksi transparan tanpa potongan biaya terselubung</span>
-                      </div>
+                    <div>
+                      <h3 className="font-headline-sm text-lg font-bold text-primary">Jual iPhone</h3>
+                      <p className="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+                        Jual cepat tanpa nego berbelit. Terima unit iBox maupun Bea Cukai, pembayaran tunai atau transfer instan.
+                      </p>
                     </div>
                   </div>
-
-                  <div className="pt-6 mt-4 border-t border-surface-container">
+                  <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
                       onClick={() => setIsSellModalOpen(true)}
-                      className="w-full py-3.5 px-4 rounded bg-secondary text-on-secondary font-label-md text-sm hover:bg-secondary/90 transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]"
+                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
                     >
-                      <span className="material-symbols-outlined text-[18px]">monetization_on</span>
+                      <span className="material-symbols-outlined text-[16px]">monetization_on</span>
                       Mulai Estimasi Jual iPhone
                     </button>
                   </div>
@@ -878,148 +727,87 @@ export const App: React.FC = () => {
           </section>
 
           {/* 4. VALUE PROPOSITION: KEUNGGULAN LAYANAN */}
-          <section className="w-full bg-surface-container-lowest py-10 sm:py-space-xl border-t border-b border-outline-variant/30" id="keunggulan">
+          <section className="w-full bg-surface-container-lowest py-10 sm:py-16 border-t border-outline-variant/30" id="keunggulan">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
-              <div className="text-center max-w-2xl mx-auto space-y-1 sm:space-y-space-xs">
-                <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Komitmen &amp; Kualitas</span>
-                <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Keunggulan Layanan</h2>
-                <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Standar editorial ketat untuk setiap transaksi iPhone di Kedai Gadget Bali.</p>
+              <div className="text-center max-w-xl mx-auto space-y-1">
+                <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Standar Pelayanan</span>
+                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Keunggulan Layanan</h2>
+                <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Jaminan keamanan dan transparansi belanja di Kedai Gadget.</p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
-                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">schedule</span>
-                  </div>
-                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Buka 24 Jam Nonstop</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
+                  <span className="material-symbols-outlined text-[24px] text-primary">schedule</span>
+                  <h3 className="font-headline-sm text-sm font-bold text-primary">Buka 24 Jam</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Pelayanan konsultasi online dan janji transaksi COD fleksibel kapan pun setiap hari.
+                    Konsultasi dan jadwal COD fleksibel kapan pun di seluruh wilayah Bali.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
-                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-secondary">
-                    <span className="material-symbols-outlined text-[22px]">verified</span>
-                  </div>
-                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Lolos QC 32-Titik</h3>
+                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
+                  <span className="material-symbols-outlined text-[24px] text-secondary">verified</span>
+                  <h3 className="font-headline-sm text-sm font-bold text-primary">Lolos QC 32-Titik</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Inspeksi ketat layar, kamera, TrueTone, Face ID, dan kesehatan baterai sebelum unit dipajang.
+                    Uji menyeluruh layar, kamera, TrueTone, Face ID, dan kesehatan baterai.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
-                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">signal_cellular_alt</span>
-                  </div>
-                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Sinyal IMEI Permanen</h3>
+                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
+                  <span className="material-symbols-outlined text-[24px] text-primary">signal_cellular_alt</span>
+                  <h3 className="font-headline-sm text-sm font-bold text-primary">Sinyal Permanen</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Legalitas terjamin resmi iBox atau Bea Cukai All Operator tanpa risiko sinyal terblokir.
+                    Legalitas terdaftar resmi iBox atau Bea Cukai All Operator seumur hidup.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
-                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-[22px]">local_shipping</span>
-                  </div>
-                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">COD Langsung Area Bali</h3>
+                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
+                  <span className="material-symbols-outlined text-[24px] text-primary">local_shipping</span>
+                  <h3 className="font-headline-sm text-sm font-bold text-primary">COD Seluruh Bali</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Ketemuan langsung di lokasi Denpasar, Badung, Gianyar, dan sekitarnya; cek fisik sepuasnya sebelum bayar.
+                    Cek fisik dan fungsi sepuasnya di tempat sebelum melakukan pembayaran.
                   </p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* 5. LOCATION & SERVICE AREA SECTION */}
-          <section className="w-full bg-surface py-8 sm:py-space-xl" id="lokasi">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-6 sm:space-y-space-lg">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-space-sm">
-                <div>
-                  <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Area Operasional</span>
-                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Lokasi Toko &amp; Jangkauan COD</h2>
-                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Melayani transaksi aman dengan sistem Cash on Delivery (COD) langsung di tempat.</p>
-                </div>
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-secondary-container/40 text-secondary font-label-sm text-xs sm:text-label-sm font-semibold">
-                    <span className="inline-block w-2 h-2 rounded-full bg-secondary"></span>
-                    Online Store • Penatih, Denpasar Timur
-                  </span>
-                </div>
+          {/* 5. LOCATION STRIP */}
+          <section className="w-full bg-surface py-8 border-t border-outline-variant/30" id="lokasi">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+              <div>
+                <p className="font-headline-sm text-sm font-bold text-primary">Basis Operasional: Penatih, Denpasar Timur</p>
+                <p className="font-body-sm text-xs text-on-surface-variant mt-0.5">Sistem Online &amp; Cash on Delivery (COD) langsung se-Bali.</p>
               </div>
-
-              <div className="bg-surface-container-lowest rounded-xl p-5 sm:p-space-lg border border-outline-variant/30 space-y-4">
-                <div>
-                  <span className="font-label-sm text-[11px] uppercase text-outline font-semibold">Basis Operasional</span>
-                  <h3 className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary mt-1">Kedai Gadget Bali</h3>
-                  <p className="font-body-md text-xs sm:text-body-md text-on-surface mt-1.5 leading-relaxed">
-                    Berbasis di <strong>Penatih, Denpasar Timur, Bali</strong>. Saat ini kami melayani penjualan secara online dengan kemudahan transaksi COD (ketemuan di lokasi yang disepakati) di seluruh area Denpasar, Badung, Gianyar, dan sekitarnya. Pembeli dapat memeriksa fisik dan seluruh fungsi unit sepuasnya sebelum melakukan pembayaran di tempat.
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-body-sm">
-                  <div>
-                    <span className="text-on-surface-variant">Sistem Pembayaran: </span>
-                    <span className="font-semibold text-primary">Cash di Tempat / Transfer Bank (BCA, Mandiri, BRI)</span>
-                  </div>
-                  <div>
-                    <span className="text-on-surface-variant">Jadwal COD: </span>
-                    <span className="font-semibold text-primary">Fleksibel Sesuai Janji Temu</span>
-                  </div>
-                </div>
-              </div>
+              <a
+                href="https://wa.me/628976747272"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-surface-container-high text-primary font-label-md text-xs hover:bg-surface-dim transition-colors"
+              >
+                <span className="material-symbols-outlined text-[16px]">chat</span>
+                Jadwalkan COD via WhatsApp
+              </a>
             </div>
           </section>
         </div>
       </main>
 
       {/* FOOTER */}
-      <footer className="w-full bg-surface-container-lowest border-t border-outline-variant/40 mt-8 sm:mt-space-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin py-8 sm:py-space-xl grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-space-lg">
-          <div className="md:col-span-5 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <img alt="Kedai Gadget Brand Logo" className="h-8 w-auto object-contain" src="/logo.png" />
-              <span className="font-headline-sm text-base sm:text-headline-sm font-bold tracking-tight text-primary">KEDAI GADGET</span>
-            </div>
-            <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant max-w-md leading-relaxed">
-              Atelier kurasi dan servis iPhone berstandar presisi editorial. Setiap unit melalui inspeksi diagnostik 32-titik ketat untuk menjamin keaslian komponen OEM, battery health prima, dan transparansi riwayat perangkat.
-            </p>
-            <div className="pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-secondary-container/40 border border-secondary/30 text-secondary font-label-sm text-[11px] font-semibold">
-                <span className="text-[8px]">●</span> Atelier Verified Diagnostics
-              </span>
-            </div>
+      <footer className="w-full bg-surface-container-lowest border-t border-outline-variant/30 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
+          <div className="flex items-center gap-2">
+            <img alt="Kedai Gadget" className="h-6 w-auto object-contain" src="/logo.png" />
+            <span className="font-bold text-primary">KEDAI GADGET</span>
+            <span className="text-outline/40">•</span>
+            <span>Penatih, Denpasar Timur, Bali</span>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <h4 className="font-label-sm text-xs uppercase tracking-wider text-on-surface font-semibold">Eksplorasi</h4>
-            <ul className="space-y-1.5 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-              <li><a className="hover:text-primary transition-colors" href="#katalog">Katalog Unit</a></li>
-              <li><a className="hover:text-primary transition-colors" href="#tukar-tambah">Tukar Tambah</a></li>
-              <li><a className="hover:text-primary transition-colors" href="#jual-iphone">Jual iPhone</a></li>
-              <li><a className="hover:text-primary transition-colors" href="#keunggulan">Keunggulan Layanan</a></li>
-              <li><a className="hover:text-primary transition-colors" href="#lokasi">Lokasi &amp; Wilayah COD</a></li>
-            </ul>
+          <div className="flex items-center gap-5">
+            <a href="#katalog" className="hover:text-primary transition-colors">Katalog</a>
+            <a href="#tukar-tambah" className="hover:text-primary transition-colors">Tukar Tambah</a>
+            <a href="#keunggulan" className="hover:text-primary transition-colors">Keunggulan</a>
+            <a href="https://www.instagram.com/kedaigadgett" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@kedaigadgett</a>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <h4 className="font-label-sm text-xs uppercase tracking-wider text-on-surface font-semibold">Informasi</h4>
-            <ul className="space-y-1.5 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-              <li>Online Store Penatih</li>
-              <li>Pengujian 32-Titik</li>
-              <li>Ketemuan Langsung di Tempat</li>
-              <li>Garansi Toko Terbuka</li>
-            </ul>
-          </div>
-          <div className="md:col-span-3 space-y-2">
-            <h4 className="font-label-sm text-xs uppercase tracking-wider text-on-surface font-semibold">Layanan &amp; COD</h4>
-            <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Penatih, Denpasar Timur, Bali</p>
-            <p className="font-label-sm text-xs text-on-surface-variant">WhatsApp: 0897-674-7272</p>
-            <p className="font-label-sm text-xs text-on-surface-variant">Instagram: @kedaigadgett</p>
-          </div>
-        </div>
-
-        <div className="border-t border-outline-variant/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-            <p className="font-body-sm text-[11px] sm:text-xs text-on-surface-variant">© {new Date().getFullYear()} Kedai Gadget. Hak cipta dilindungi undang-undang.</p>
-            <p className="font-label-sm text-[10px] sm:text-[11px] text-on-surface-variant">Paper Minimalist Design System • Penatih Edition</p>
-          </div>
+          <p>© {new Date().getFullYear()} Kedai Gadget. All rights reserved.</p>
         </div>
       </footer>
 
