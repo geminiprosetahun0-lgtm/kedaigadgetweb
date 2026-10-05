@@ -66,6 +66,21 @@ export const toggleProductStock = (id) => {
     saveProducts(products);
     return updated;
 };
+export const updateProduct = (id, updates) => {
+    const products = getProducts();
+    const index = products.findIndex((p) => p.id === id);
+    if (index === -1)
+        return null;
+    const current = products[index];
+    const updated = {
+        ...current,
+        ...updates,
+        id: current.id, // ID must remain immutable
+    };
+    products[index] = updated;
+    saveProducts(products);
+    return updated;
+};
 export const deleteProduct = (id) => {
     const products = getProducts();
     const filtered = products.filter((p) => p.id !== id);

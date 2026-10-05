@@ -92,6 +92,23 @@ export const toggleProductStock = (id: string): ProductItem | null => {
   return updated;
 };
 
+export const updateProduct = (id: string, updates: Partial<ProductItem>): ProductItem | null => {
+  const products = getProducts();
+  const index = products.findIndex((p) => p.id === id);
+  if (index === -1) return null;
+
+  const current = products[index];
+  const updated: ProductItem = {
+    ...current,
+    ...updates,
+    id: current.id, // ID must remain immutable
+  };
+
+  products[index] = updated;
+  saveProducts(products);
+  return updated;
+};
+
 export const deleteProduct = (id: string): boolean => {
   const products = getProducts();
   const filtered = products.filter((p) => p.id !== id);
