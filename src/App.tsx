@@ -202,12 +202,17 @@ export const App: React.FC = () => {
   const [products, setProducts] = useState<ProductItem[]>(() => {
     try {
       const saved = localStorage.getItem('kg_vault_stock');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch {
       // fallback if corrupted
     }
     return PRODUCTS;
   });
+
+  const [isCatalogDemo, setIsCatalogDemo] = useState(true);
 
   // Fetch real-time products from API server if running
   useEffect(() => {
@@ -217,7 +222,8 @@ export const App: React.FC = () => {
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data)) {
-            setProducts(data);
+            setIsCatalogDemo(data.length === 0);
+            setProducts(data.length ? data : PRODUCTS);
           }
         }
       } catch {
@@ -235,12 +241,13 @@ export const App: React.FC = () => {
   const [tempPrice, setTempPrice] = useState<number>(0);
 
   useEffect(() => {
+    if (isCatalogDemo) return;
     try {
       localStorage.setItem('kg_vault_stock', JSON.stringify(products));
     } catch {
       // storage quota exception guard
     }
-  }, [products]);
+  }, [products, isCatalogDemo]);
 
   const [activeCondition, setActiveCondition] = useState<'all' | 'second' | 'bnib'>('all');
   const [activeSeries, setActiveSeries] = useState<string>('all');
@@ -250,6 +257,10 @@ export const App: React.FC = () => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
+
+  // Service Estimation Modals
+  const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
+  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
 
   // Form State with strict sanitization
   const [tradeForm, setTradeForm] = useState({
@@ -388,7 +399,8 @@ export const App: React.FC = () => {
       `- Target Upgrade: ${cleanTarget}\n\n` +
       `Mohon rincian estimasi penambahan dan ketersediaan stok di toko.`
     );
-    window.open(`https://wa.me/628976747272?text=${text}`, '_blank');
+    window.open(`https://wa.me/628976747272?text=${text}`, '_blank', 'noopener,noreferrer');
+    setIsTradeModalOpen(false);
   };
 
   const handleSell = (e: React.FormEvent) => {
@@ -410,7 +422,8 @@ export const App: React.FC = () => {
       `- Kontak WA: ${cleanPhone}\n\n` +
       `Berapa estimasi penawaran harga terbaik dari Kedai Gadget?`
     );
-    window.open(`https://wa.me/628976747272?text=${text}`, '_blank');
+    window.open(`https://wa.me/628976747272?text=${text}`, '_blank', 'noopener,noreferrer');
+    setIsSellModalOpen(false);
   };
 
   return (
@@ -424,7 +437,7 @@ export const App: React.FC = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              <span className="tracking-wide text-surface-dim truncate text-[11px] sm:text-[13px]">Buka 24 Jam • Customer Service Siap Melayani</span>
+              <span className="tracking-wide text-surface-dim truncate text-[11px] sm:text-[13px]">Buka 24 Jam • COD se-Bali</span>
             </div>
             <div className="hidden sm:flex items-center gap-space-lg text-surface-dim shrink-0">
               <span>Penatih, Denpasar Timur</span>
@@ -449,14 +462,16 @@ export const App: React.FC = () => {
               <a className="py-space-xs transition-colors text-primary border-b-2 border-primary font-semibold font-label-md text-label-md" href="#katalog">Katalog Unit</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#tukar-tambah">Tukar Tambah</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#jual-iphone">Jual iPhone</a>
+              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#keunggulan">Keunggulan</a>
               <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#lokasi">Lokasi Toko</a>
             </nav>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsAdminOpen(true)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-space-md sm:py-space-xs rounded bg-surface-container-low border border-outline-variant/60 font-label-sm text-[11px] sm:text-label-sm text-on-surface hover:bg-surface-container hover:text-on-surface transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-space-md sm:py-space-xs rounded bg-surface-container-low border border-outline-variant/60 font-label-sm text-[11px] sm:text-label-sm text-on-surface hover:bg-surface-container hover:text-on-surface transition-all"
+                title="Kelola Inventaris & Stok"
               >
-                <span className="material-symbols-outlined text-[15px] sm:text-[16px]">lock</span>
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">inventory_2</span>
                 <span className="hidden xs:inline">Kelola</span> Stok
               </button>
               <div className="flex items-center gap-2 pl-2 border-l border-outline-variant/40">
@@ -511,9 +526,9 @@ export const App: React.FC = () => {
                       <span className="material-symbols-outlined text-[18px]">devices</span>
                       Jelajahi Katalog
                     </a>
-                    <a className="inline-flex items-center justify-center gap-space-xs px-5 py-3 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container active:scale-[0.99] transition-all shadow-sm text-center border border-outline-variant/40" href="https://wa.me/628976747272?text=Halo%20Kedai%20Gadget%2C%20saya%20ingin%20tanya%20customer%20service" target="_blank" rel="noopener noreferrer">
-                      <span className="material-symbols-outlined text-[18px] text-secondary">support_agent</span>
-                      Customer Service
+                    <a className="inline-flex items-center justify-center gap-space-xs px-5 py-3 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container active:scale-[0.99] transition-all shadow-sm text-center border border-outline-variant/40" href="#keunggulan">
+                      <span className="material-symbols-outlined text-[18px] text-secondary">verified_user</span>
+                      Keunggulan Layanan
                     </a>
                   </div>
 
@@ -563,18 +578,18 @@ export const App: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-outline mt-0.5 text-[20px] shrink-0">chat</span>
+                      <span className="material-symbols-outlined text-outline mt-0.5 text-[20px] shrink-0">shield</span>
                       <div className="min-w-0 flex-1">
-                        <p className="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">WhatsApp Customer Service</p>
-                        <p className="font-body-md text-sm sm:text-body-md text-primary font-medium">0897-674-7272</p>
-                        <p className="font-body-sm text-xs text-secondary font-medium mt-0.5">Chat langsung untuk tanya ketersediaan stok &amp; jadwal COD</p>
+                        <p className="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold">Standar Inspeksi &amp; Garansi</p>
+                        <p className="font-body-md text-sm sm:text-body-md text-primary font-medium">QC 32-Titik &amp; Garansi Toko</p>
+                        <p className="font-body-sm text-xs text-secondary font-medium mt-0.5">Cek fisik dan fungsi sepuasnya sebelum transaksi</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-2">
-                    <a className="w-full inline-flex items-center justify-center gap-1.5 py-3 px-3 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all" href="https://wa.me/628976747272" target="_blank" rel="noopener noreferrer">
-                      <span className="material-symbols-outlined text-[16px]">send</span> Hubungi Customer Service
+                    <a className="w-full inline-flex items-center justify-center gap-1.5 py-3 px-3 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all" href="#katalog">
+                      <span className="material-symbols-outlined text-[16px]">visibility</span> Lihat Unit Ready Stock
                     </a>
                   </div>
 
@@ -597,7 +612,7 @@ export const App: React.FC = () => {
                 <div>
                   <div className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Inventory Live Feed</div>
                   <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Katalog Unit Kurasi</h2>
-                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Pembaruan stok harian. Real-photo, transparan, terjamin garansi.</p>
+                   <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">{isCatalogDemo ? 'Contoh tampilan katalog. Stok dan harga perlu dikonfirmasi sebelum transaksi.' : 'Pembaruan stok harian. Foto unit, harga dan kondisi ditampilkan transparan.'}</p>
                 </div>
                 <div className="w-full md:w-80">
                   <div className="relative flex items-center">
@@ -679,7 +694,8 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Product Grid */}
+               {isCatalogDemo && <p role="status" className="rounded bg-surface-container-low px-4 py-3 text-xs text-on-surface-variant">Belum ada stok aktif. Unit di bawah hanya contoh katalog, bukan penawaran barang tersedia.</p>}
+               {/* Product Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-space-lg pt-2">
                 {filteredProducts.map((p) => (
                   <div
@@ -689,10 +705,10 @@ export const App: React.FC = () => {
                     <div>
                       <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center p-3 sm:p-space-md">
                         <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-[10px] sm:text-label-sm font-semibold shadow-sm">
-                          {p.gradeBadge}
+                           {isCatalogDemo ? 'Contoh Unit' : p.gradeBadge}
                         </span>
                         <span className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/80 backdrop-blur-sm text-secondary font-label-sm text-[10px] sm:text-label-sm font-bold">
-                          <span className="text-[7px]">●</span> {p.statusText}
+                           <span className="text-[7px]">●</span> {isCatalogDemo ? 'Stok belum tersedia' : p.statusText}
                         </span>
                         <img
                           src={p.image}
@@ -720,21 +736,21 @@ export const App: React.FC = () => {
                         <span className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary">{formatRupiah(p.price)}</span>
                         <span className="font-body-sm text-[11px] sm:text-body-sm text-outline line-through">{formatRupiah(p.originalPrice)}</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                       <div className={`grid gap-2 ${isCatalogDemo ? '' : 'grid-cols-2'}`}>
                         <button
                           onClick={() => setSelectedProduct(p)}
                           className="py-2 px-2.5 rounded bg-surface-container-high text-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-surface-dim transition-all text-center"
                         >
-                          Detail Unit
+                           Lihat Detail
                         </button>
-                        <a
+                         {!isCatalogDemo && <a
                           className="py-2 px-2.5 rounded bg-primary text-on-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-1"
                           href={createProductWaUrl(p)}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           Beli via WA
-                        </a>
+                         </a>}
                       </div>
                     </div>
                   </div>
@@ -745,7 +761,7 @@ export const App: React.FC = () => {
               <div className="p-4 sm:p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-space-md border border-outline-variant/30">
                 <div className="space-y-0.5">
                   <p className="font-headline-sm text-sm sm:text-headline-sm font-bold text-primary">Tidak menemukan varian atau warna yang dicari?</p>
-                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Hubungi Customer Service kami untuk mencari unit terkurasi yang sudah lolos quality control.</p>
+                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Hubungi kami via WhatsApp untuk mencari unit terkurasi yang sudah lolos quality control.</p>
                 </div>
                 <a
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-4 py-2.5 sm:px-space-lg sm:py-space-sm rounded bg-primary text-on-primary font-label-md text-xs sm:text-label-md hover:bg-primary-container transition-all text-nowrap shadow-sm text-center"
@@ -760,7 +776,7 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          {/* 3. SERVICES SECTION: TUKAR TAMBAH & JUAL IPHONE */}
+          {/* 3. SERVICES SECTION: TUKAR TAMBAH & JUAL IPHONE (RINGKAS TEASER CARDS) */}
           <section className="w-full bg-surface py-8 sm:py-space-xl relative" id="tukar-tambah">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-6 sm:space-y-space-lg">
               <div className="text-center max-w-2xl mx-auto space-y-1 sm:space-y-space-xs">
@@ -769,349 +785,184 @@ export const App: React.FC = () => {
                 <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Penaksiran harga objektif berbasis kondisi riil hardware tanpa potongan terselubung. Proses kilat 15 menit selesai.</p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-space-lg items-stretch">
-                {/* FORM TUKAR TAMBAH */}
-                <div className="bg-surface-container-lowest rounded-xl p-5 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-space-lg items-stretch">
+                {/* TEASER CARD: TUKAR TAMBAH */}
+                <div className="bg-surface-container-lowest rounded-xl p-6 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30 hover:shadow-lg transition-shadow">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-2 border-b border-surface-container">
-                      <span className="w-10 h-10 rounded bg-secondary-container/50 text-secondary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-[24px]">published_with_changes</span>
+                    <div className="flex items-center gap-3 pb-3 border-b border-surface-container">
+                      <span className="w-12 h-12 rounded-xl bg-secondary-container/50 text-secondary flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-[26px]">published_with_changes</span>
                       </span>
                       <div>
-                        <h3 className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary">Tukar Tambah (Trade-in)</h3>
-                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Upgrade iPhone lama Anda ke seri terbaru secara instan</p>
+                        <h3 className="font-headline-sm text-lg sm:text-headline-sm font-bold text-primary">Tukar Tambah (Trade-In)</h3>
+                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Upgrade iPhone lama ke unit incaran dengan selisih harga terbaik</p>
                       </div>
                     </div>
 
-                    <form className="space-y-3.5" onSubmit={handleTradeIn}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">iPhone Saat Ini</label>
-                          <select
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            value={tradeForm.curr}
-                            onChange={(e) => setTradeForm({ ...tradeForm, curr: e.target.value })}
-                          >
-                            <optgroup label="iPhone 17 Series">
-                              <option value="iPhone 17 Pro Max">iPhone 17 Pro Max</option>
-                              <option value="iPhone 17 Pro">iPhone 17 Pro</option>
-                              <option value="iPhone 17 Slim / Air">iPhone 17 Slim / Air</option>
-                              <option value="iPhone 17">iPhone 17</option>
-                            </optgroup>
-                            <optgroup label="iPhone 16 Series">
-                              <option value="iPhone 16 Pro Max">iPhone 16 Pro Max</option>
-                              <option value="iPhone 16 Pro">iPhone 16 Pro</option>
-                              <option value="iPhone 16 Plus">iPhone 16 Plus</option>
-                              <option value="iPhone 16">iPhone 16</option>
-                            </optgroup>
-                            <optgroup label="iPhone 15 Series">
-                              <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
-                              <option value="iPhone 15 Pro">iPhone 15 Pro</option>
-                              <option value="iPhone 15 Plus">iPhone 15 Plus</option>
-                              <option value="iPhone 15">iPhone 15</option>
-                            </optgroup>
-                            <optgroup label="iPhone 14 Series">
-                              <option value="iPhone 14 Pro Max">iPhone 14 Pro Max</option>
-                              <option value="iPhone 14 Pro">iPhone 14 Pro</option>
-                              <option value="iPhone 14 Plus">iPhone 14 Plus</option>
-                              <option value="iPhone 14">iPhone 14</option>
-                            </optgroup>
-                            <optgroup label="iPhone 13 Series">
-                              <option value="iPhone 13 Pro Max">iPhone 13 Pro Max</option>
-                              <option value="iPhone 13 Pro">iPhone 13 Pro</option>
-                              <option value="iPhone 13">iPhone 13</option>
-                              <option value="iPhone 13 mini">iPhone 13 mini</option>
-                            </optgroup>
-                            <optgroup label="iPhone 12 Series">
-                              <option value="iPhone 12 Pro Max">iPhone 12 Pro Max</option>
-                              <option value="iPhone 12 Pro">iPhone 12 Pro</option>
-                              <option value="iPhone 12">iPhone 12</option>
-                              <option value="iPhone 12 mini">iPhone 12 mini</option>
-                            </optgroup>
-                            <optgroup label="iPhone 11 Series">
-                              <option value="iPhone 11 Pro Max">iPhone 11 Pro Max</option>
-                              <option value="iPhone 11 Pro">iPhone 11 Pro</option>
-                              <option value="iPhone 11">iPhone 11</option>
-                            </optgroup>
-                            <optgroup label="iPhone X / XS / XR">
-                              <option value="iPhone XS Max">iPhone XS Max</option>
-                              <option value="iPhone XS">iPhone XS</option>
-                              <option value="iPhone XR">iPhone XR</option>
-                              <option value="iPhone X">iPhone X</option>
-                            </optgroup>
-                            <optgroup label="iPhone SE & 8 Series">
-                              <option value="iPhone SE (Gen 3)">iPhone SE (Gen 3)</option>
-                              <option value="iPhone SE (Gen 2)">iPhone SE (Gen 2)</option>
-                              <option value="iPhone 8 Plus">iPhone 8 Plus</option>
-                              <option value="iPhone 8">iPhone 8</option>
-                            </optgroup>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Kapasitas Penyimpanan</label>
-                          <select
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            value={tradeForm.storage}
-                            onChange={(e) => setTradeForm({ ...tradeForm, storage: e.target.value })}
-                          >
-                            <option value="64 GB">64 GB</option>
-                            <option value="128 GB">128 GB</option>
-                            <option value="256 GB">256 GB</option>
-                            <option value="512 GB">512 GB</option>
-                          </select>
-                        </div>
-                      </div>
+                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant leading-relaxed">
+                      Punya iPhone lama dan ingin beralih ke seri lebih baru? Hitung simulasi penambahan nilai unit Anda secara instan dan dapatkan penawaran harga kompetitif.
+                    </p>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Estimasi Battery Health</label>
-                          <input
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            placeholder="Contoh: 85%"
-                            type="text"
-                            value={tradeForm.bh}
-                            onChange={(e) => setTradeForm({ ...tradeForm, bh: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Kondisi Fisik &amp; Kelengkapan</label>
-                          <select
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            value={tradeForm.condition}
-                            onChange={(e) => setTradeForm({ ...tradeForm, condition: e.target.value })}
-                          >
-                            <option value="Mulus 99% • Fullset Box">Mulus 99% • Fullset Box</option>
-                            <option value="Mulus 95% • Batangan Unit Only">Mulus 95% • Batangan Unit Only</option>
-                            <option value="Ada Dent Kecil • Fullset">Ada Dent Kecil • Fullset</option>
-                          </select>
-                        </div>
+                    <div className="space-y-2 pt-1 font-body-sm text-xs text-on-surface">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Penaksiran jujur berbasis kondisi fisik &amp; Battery Health</span>
                       </div>
-
-                      <div>
-                        <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">iPhone Impian Anda (Target Upgrade)</label>
-                        <select
-                          className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                          value={tradeForm.target}
-                          onChange={(e) => setTradeForm({ ...tradeForm, target: e.target.value })}
-                        >
-                          <optgroup label="Unit di Katalog Toko">
-                            {products.map((p) => (
-                              <option key={p.id} value={`${p.name} ${p.storage} (${p.color})`}>
-                                {p.name} {p.storage} - {p.color}
-                              </option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="iPhone 17 Series (Pre-Order / Booking)">
-                            <option value="iPhone 17 Pro Max 256GB">iPhone 17 Pro Max 256GB</option>
-                            <option value="iPhone 17 Pro 256GB">iPhone 17 Pro 256GB</option>
-                            <option value="iPhone 17 Slim / Air 256GB">iPhone 17 Slim / Air 256GB</option>
-                            <option value="iPhone 17 128GB">iPhone 17 128GB</option>
-                          </optgroup>
-                          <optgroup label="iPhone 16 Series">
-                            <option value="iPhone 16 Pro Max 256GB">iPhone 16 Pro Max 256GB</option>
-                            <option value="iPhone 16 Pro 128GB">iPhone 16 Pro 128GB</option>
-                            <option value="iPhone 16 Plus 128GB">iPhone 16 Plus 128GB</option>
-                            <option value="iPhone 16 128GB">iPhone 16 128GB</option>
-                          </optgroup>
-                          <optgroup label="iPhone 15 Series">
-                            <option value="iPhone 15 Pro Max 256GB">iPhone 15 Pro Max 256GB</option>
-                            <option value="iPhone 15 Pro 128GB">iPhone 15 Pro 128GB</option>
-                            <option value="iPhone 15 Plus 128GB">iPhone 15 Plus 128GB</option>
-                            <option value="iPhone 15 128GB">iPhone 15 128GB</option>
-                          </optgroup>
-                          <optgroup label="iPhone 14 Series">
-                            <option value="iPhone 14 Pro Max 128GB">iPhone 14 Pro Max 128GB</option>
-                            <option value="iPhone 14 Pro 128GB">iPhone 14 Pro 128GB</option>
-                            <option value="iPhone 14 Plus 128GB">iPhone 14 Plus 128GB</option>
-                            <option value="iPhone 14 128GB">iPhone 14 128GB</option>
-                          </optgroup>
-                          <optgroup label="iPhone 13 Series">
-                            <option value="iPhone 13 Pro Max 128GB">iPhone 13 Pro Max 128GB</option>
-                            <option value="iPhone 13 Pro 128GB">iPhone 13 Pro 128GB</option>
-                            <option value="iPhone 13 128GB">iPhone 13 128GB</option>
-                          </optgroup>
-                        </select>
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Bebas pilih unit upgrade dari seluruh katalog ready stock</span>
                       </div>
-
-                      <div className="p-3 rounded bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-1 border border-outline-variant/30">
-                        <div>
-                          <span className="font-label-sm text-[11px] text-on-surface-variant block">Estimasi Nilai Tukar Unit Anda</span>
-                          <span className="font-title-md text-base sm:text-title-md font-bold text-secondary">Rp 4.500.000 – Rp 6.200.000*</span>
-                        </div>
-                        <span className="font-label-sm text-[11px] text-outline">*Sesuai cek fisik</span>
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Bantu pindah data aman saat transaksi COD di tempat</span>
                       </div>
-
-                      <button className="w-full py-3 px-4 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]" type="submit">
-                        <span className="material-symbols-outlined text-[18px]">calculate</span>
-                        Hitung Nilai &amp; Ajukan via WA
-                      </button>
-                    </form>
+                    </div>
                   </div>
-                  <div className="pt-3 mt-2 font-label-sm text-[11px] sm:text-label-sm text-on-surface-variant flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-secondary shrink-0">check_circle</span> Data langsung terformat di WhatsApp admin toko.
+
+                  <div className="pt-6 mt-4 border-t border-surface-container">
+                    <button
+                      onClick={() => setIsTradeModalOpen(true)}
+                      className="w-full py-3.5 px-4 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">calculate</span>
+                      Mulai Estimasi Tukar Tambah
+                    </button>
                   </div>
                 </div>
 
-                {/* FORM JUAL IPHONE */}
-                <div className="bg-surface-container-lowest rounded-xl p-5 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30" id="jual-iphone">
+                {/* TEASER CARD: JUAL IPHONE */}
+                <div className="bg-surface-container-lowest rounded-xl p-6 sm:p-space-lg shadow-md flex flex-col justify-between border border-outline-variant/30 hover:shadow-lg transition-shadow" id="jual-iphone">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-2 border-b border-surface-container">
-                      <span className="w-10 h-10 rounded bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-[24px]">payments</span>
+                    <div className="flex items-center gap-3 pb-3 border-b border-surface-container">
+                      <span className="w-12 h-12 rounded-xl bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-[26px]">payments</span>
                       </span>
                       <div>
-                        <h3 className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary">Jual iPhone Anda</h3>
-                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Pencairan tunai atau transfer instan tanpa ribet nego berlarut-larut</p>
+                        <h3 className="font-headline-sm text-lg sm:text-headline-sm font-bold text-primary">Jual iPhone Anda</h3>
+                        <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">Pencairan dana instan tanpa ribet negosiasi panjang</p>
                       </div>
                     </div>
 
-                    <form className="space-y-3.5" onSubmit={handleSell}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Model &amp; Seri</label>
-                          <input
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            placeholder="Contoh: iPhone 13 Pro 256GB Gold"
-                            required
-                            type="text"
-                            value={sellForm.model}
-                            onChange={(e) => setSellForm({ ...sellForm, model: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Status Garansi Asal</label>
-                          <select
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            value={sellForm.origin}
-                            onChange={(e) => setSellForm({ ...sellForm, origin: e.target.value })}
-                          >
-                            <option value="Resmi iBox / Digimap (PA/A, ID/A)">Resmi iBox / Digimap (PA/A, ID/A)</option>
-                            <option value="Inter All Provider Terdaftar Bea Cukai">Inter All Provider Terdaftar Bea Cukai</option>
-                            <option value="Lainnya">Lainnya</option>
-                          </select>
-                        </div>
-                      </div>
+                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant leading-relaxed">
+                      Mau jual iPhone cepat dengan harga pantas? Kami menerima unit resmi iBox maupun Bea Cukai dengan verifikasi kilat 10-15 menit langsung cair.
+                    </p>
 
-                      <div>
-                        <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Catatan Kondisi Riil &amp; Minus (Jika Ada)</label>
-                        <textarea
-                          className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                          placeholder="Contoh: Layar mulus tanpa scratch, TrueTone &amp; FaceID aktif, BH 89%, ada lecet halus di sudut bawah bekas case..."
-                          rows={3}
-                          value={sellForm.desc}
-                          onChange={(e) => setSellForm({ ...sellForm, desc: e.target.value })}
-                        />
+                    <div className="space-y-2 pt-1 font-body-sm text-xs text-on-surface">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Pembayaran tunai / transfer instan (BCA, Mandiri, BRI) di tempat</span>
                       </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Metode Pencairan</label>
-                          <select
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            value={sellForm.method}
-                            onChange={(e) => setSellForm({ ...sellForm, method: e.target.value })}
-                          >
-                            <option value="Transfer Bank Instan (BCA / Mandiri / BRI)">Transfer Bank Instan (BCA / Mandiri / BRI)</option>
-                            <option value="Tunai / Cash di Toko">Tunai / Cash di Toko</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block font-label-sm text-xs text-on-surface-variant font-medium mb-1">Nomor WhatsApp Anda</label>
-                          <input
-                            className="w-full px-3 py-2.5 rounded bg-surface-container-low text-primary font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest border border-outline-variant/40"
-                            placeholder="08xxxxxxxxxx"
-                            required
-                            type="tel"
-                            value={sellForm.phone}
-                            onChange={(e) => setSellForm({ ...sellForm, phone: e.target.value })}
-                          />
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Menerima kondisi mulus fullset maupun unit only (batangan)</span>
                       </div>
-
-                      <button className="w-full py-3 px-4 rounded bg-secondary text-on-secondary font-label-md text-sm hover:bg-secondary/90 transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]" type="submit">
-                        <span className="material-symbols-outlined text-[18px]">monetization_on</span>
-                        Dapatkan Penawaran Instan via WA
-                      </button>
-                    </form>
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">check_circle</span>
+                        <span>Inspeksi transparan tanpa potongan biaya terselubung</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="pt-3 mt-2 font-label-sm text-[11px] sm:text-label-sm text-on-surface-variant flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-secondary shrink-0">verified</span> Kami bayar tunai di tempat setelah inspeksi fisik 10 menit.
+
+                  <div className="pt-6 mt-4 border-t border-surface-container">
+                    <button
+                      onClick={() => setIsSellModalOpen(true)}
+                      className="w-full py-3.5 px-4 rounded bg-secondary text-on-secondary font-label-md text-sm hover:bg-secondary/90 transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">monetization_on</span>
+                      Mulai Estimasi Jual iPhone
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* 4. LOCATION & SERVICE AREA SECTION */}
-          <section className="w-full bg-surface-container-lowest py-8 sm:py-space-xl" id="lokasi">
+          {/* 4. VALUE PROPOSITION: KEUNGGULAN LAYANAN */}
+          <section className="w-full bg-surface-container-lowest py-10 sm:py-space-xl border-t border-b border-outline-variant/30" id="keunggulan">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
+              <div className="text-center max-w-2xl mx-auto space-y-1 sm:space-y-space-xs">
+                <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Komitmen &amp; Kualitas</span>
+                <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Keunggulan Layanan</h2>
+                <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Standar editorial ketat untuk setiap transaksi iPhone di Kedai Gadget Bali.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[22px]">schedule</span>
+                  </div>
+                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Buka 24 Jam Nonstop</h3>
+                  <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    Pelayanan konsultasi online dan janji transaksi COD fleksibel kapan pun setiap hari.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-secondary">
+                    <span className="material-symbols-outlined text-[22px]">verified</span>
+                  </div>
+                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Lolos QC 32-Titik</h3>
+                  <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    Inspeksi ketat layar, kamera, TrueTone, Face ID, dan kesehatan baterai sebelum unit dipajang.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[22px]">signal_cellular_alt</span>
+                  </div>
+                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">Sinyal IMEI Permanen</h3>
+                  <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    Legalitas terjamin resmi iBox atau Bea Cukai All Operator tanpa risiko sinyal terblokir.
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/40 space-y-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-surface-container-lowest border border-outline-variant/50 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[22px]">local_shipping</span>
+                  </div>
+                  <h3 className="font-headline-sm text-sm sm:text-base font-bold text-primary">COD Langsung Area Bali</h3>
+                  <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
+                    Ketemuan langsung di lokasi Denpasar, Badung, Gianyar, dan sekitarnya; cek fisik sepuasnya sebelum bayar.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. LOCATION & SERVICE AREA SECTION */}
+          <section className="w-full bg-surface py-8 sm:py-space-xl" id="lokasi">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-6 sm:space-y-space-lg">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-space-sm">
                 <div>
-                  <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Area Layanan &amp; Pengiriman</span>
-                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Penatih, Denpasar Timur &amp; COD se-Bali</h2>
-                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Transaksi aman dengan sistem Cash on Delivery (COD) atau pengiriman langsung.</p>
+                  <span className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Area Operasional</span>
+                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Lokasi Toko &amp; Jangkauan COD</h2>
+                  <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Melayani transaksi aman dengan sistem Cash on Delivery (COD) langsung di tempat.</p>
                 </div>
                 <div>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-secondary-container/40 text-secondary font-label-sm text-xs sm:text-label-sm font-semibold">
                     <span className="inline-block w-2 h-2 rounded-full bg-secondary"></span>
-                    Online Store • Layanan 24 Jam
+                    Online Store • Penatih, Denpasar Timur
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-space-lg items-stretch">
-                <div className="bg-surface rounded-xl p-5 sm:p-space-lg space-y-4 border border-outline-variant/30 flex flex-col justify-between">
-                  <div>
-                    <span className="font-label-sm text-[11px] uppercase text-outline font-semibold">Basis Operasional</span>
-                    <h3 className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary mt-1">Kedai Gadget Bali</h3>
-                    <p className="font-body-md text-xs sm:text-body-md text-on-surface mt-1.5 leading-relaxed">
-                      Berbasis di <strong>Penatih, Denpasar Timur, Bali</strong>. Saat ini kami melayani penjualan secara online dengan kemudahan transaksi COD (ketemuan di lokasi yang disepakati) di seluruh area Denpasar, Badung, Gianyar, dan sekitarnya.
-                    </p>
-                    <p className="font-body-sm text-[11px] sm:text-body-sm text-secondary font-medium mt-2">
-                      ✓ Pembeli bisa cek fisik dan fungsi unit sepuasnya sebelum bayar di tempat.
-                    </p>
-                  </div>
-                  <div className="space-y-2 pt-3 border-t border-surface-container">
-                    <div className="flex items-center justify-between text-xs sm:text-body-sm">
-                      <span className="text-on-surface-variant">Jam Layanan Chat &amp; Janji COD</span>
-                      <span className="font-semibold text-primary">24 Jam Nonstop</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs sm:text-body-sm">
-                      <span className="text-on-surface-variant">Sistem Pembayaran</span>
-                      <span className="font-semibold text-primary">Cash di Tempat / Transfer Bank</span>
-                    </div>
-                  </div>
+              <div className="bg-surface-container-lowest rounded-xl p-5 sm:p-space-lg border border-outline-variant/30 space-y-4">
+                <div>
+                  <span className="font-label-sm text-[11px] uppercase text-outline font-semibold">Basis Operasional</span>
+                  <h3 className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary mt-1">Kedai Gadget Bali</h3>
+                  <p className="font-body-md text-xs sm:text-body-md text-on-surface mt-1.5 leading-relaxed">
+                    Berbasis di <strong>Penatih, Denpasar Timur, Bali</strong>. Saat ini kami melayani penjualan secara online dengan kemudahan transaksi COD (ketemuan di lokasi yang disepakati) di seluruh area Denpasar, Badung, Gianyar, dan sekitarnya. Pembeli dapat memeriksa fisik dan seluruh fungsi unit sepuasnya sebelum melakukan pembayaran di tempat.
+                  </p>
                 </div>
-
-                <div className="bg-surface rounded-xl p-5 sm:p-space-lg border border-outline-variant/30 flex flex-col justify-between space-y-4">
+                <div className="pt-3 border-t border-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-body-sm">
                   <div>
-                    <h4 className="font-label-sm text-xs uppercase font-semibold text-on-surface tracking-wider">Keunggulan Layanan Kami</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 font-body-sm text-xs text-on-surface">
-                      <div className="flex items-center gap-2.5 p-2 rounded bg-surface-container-low">
-                        <span className="material-symbols-outlined text-secondary text-[20px] shrink-0">verified</span> Sudah Lolos QC
-                      </div>
-                      <div className="flex items-center gap-2.5 p-2 rounded bg-surface-container-low">
-                        <span className="material-symbols-outlined text-secondary text-[20px] shrink-0">local_shipping</span> Siap COD se-Bali
-                      </div>
-                      <div className="flex items-center gap-2.5 p-2 rounded bg-surface-container-low">
-                        <span className="material-symbols-outlined text-secondary text-[20px] shrink-0">support_agent</span> Customer Service 24 Jam
-                      </div>
-                      <div className="flex items-center gap-2.5 p-2 rounded bg-surface-container-low">
-                        <span className="material-symbols-outlined text-secondary text-[20px] shrink-0">task_alt</span> Sinyal IMEI Permanen
-                      </div>
-                    </div>
+                    <span className="text-on-surface-variant">Sistem Pembayaran: </span>
+                    <span className="font-semibold text-primary">Cash di Tempat / Transfer Bank (BCA, Mandiri, BRI)</span>
                   </div>
-
-                  <div className="pt-2">
-                    <a
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded bg-primary text-on-primary font-label-md text-xs sm:text-label-md hover:bg-primary-container transition-all shadow-md text-center"
-                      href="https://wa.me/628976747272?text=Halo%20Customer%20Service%20Kedai%20Gadget%2C%20apakah%20bisa%20janjian%20COD%20hari%20ini%3F"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">chat</span>
-                      Janjian COD via Customer Service
-                    </a>
+                  <div>
+                    <span className="text-on-surface-variant">Jadwal COD: </span>
+                    <span className="font-semibold text-primary">Fleksibel Sesuai Janji Temu</span>
                   </div>
                 </div>
               </div>
@@ -1143,16 +994,17 @@ export const App: React.FC = () => {
               <li><a className="hover:text-primary transition-colors" href="#katalog">Katalog Unit</a></li>
               <li><a className="hover:text-primary transition-colors" href="#tukar-tambah">Tukar Tambah</a></li>
               <li><a className="hover:text-primary transition-colors" href="#jual-iphone">Jual iPhone</a></li>
-              <li><a className="hover:text-primary transition-colors" href="#lokasi">Lokasi &amp; Jam Buka</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#keunggulan">Keunggulan Layanan</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#lokasi">Lokasi &amp; Wilayah COD</a></li>
             </ul>
           </div>
           <div className="md:col-span-2 space-y-2">
-            <h4 className="font-label-sm text-xs uppercase tracking-wider text-on-surface font-semibold">Operasional</h4>
+            <h4 className="font-label-sm text-xs uppercase tracking-wider text-on-surface font-semibold">Informasi</h4>
             <ul className="space-y-1.5 font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-              <li>Buka 24 Jam Nonstop</li>
-              <li>Senin – Minggu</li>
-              <li>Sistem COD &amp; Online</li>
-              <li>Sudah Lolos QC</li>
+              <li>Online Store Penatih</li>
+              <li>Pengujian 32-Titik</li>
+              <li>Ketemuan Langsung di Tempat</li>
+              <li>Garansi Toko Terbuka</li>
             </ul>
           </div>
           <div className="md:col-span-3 space-y-2">
@@ -1183,12 +1035,90 @@ export const App: React.FC = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span>
           </span>
-          <span className="font-label-md text-xs sm:text-label-md font-medium tracking-wide">Customer Service</span>
-          <span className="hidden sm:inline font-label-sm text-xs text-primary-fixed">
-            &nbsp;• Respon Cepat
-          </span>
+           <span className="material-symbols-outlined text-[22px]" aria-hidden="true">chat</span>
+           <span className="sr-only">Chat WhatsApp Kedai Gadget</span>
         </a>
       </div>
+
+      {/* ESTIMASI LAYANAN */}
+      {(isTradeModalOpen || isSellModalOpen) && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-primary/60 p-0 sm:p-4" onClick={() => { setIsTradeModalOpen(false); setIsSellModalOpen(false); }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="estimasi-title" className="bg-surface-container-lowest rounded-t-xl sm:rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3 mb-5">
+              <div>
+                <p className="font-label-sm text-xs uppercase tracking-widest text-secondary mb-1">Estimasi via WhatsApp</p>
+                <h2 id="estimasi-title" className="font-headline-sm text-xl font-bold text-primary">{isTradeModalOpen ? 'Tukar Tambah iPhone' : 'Jual iPhone'}</h2>
+                <p className="font-body-sm text-xs text-on-surface-variant mt-1">Isi detail unit. Penawaran final setelah cek fisik.</p>
+              </div>
+              <button type="button" className="w-9 h-9 shrink-0 rounded-full bg-surface-container-high flex items-center justify-center" aria-label="Tutup estimasi" onClick={() => { setIsTradeModalOpen(false); setIsSellModalOpen(false); }}>
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+            {isTradeModalOpen ? (
+              <form className="space-y-3.5" onSubmit={handleTradeIn}>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="block text-xs font-medium text-on-surface-variant">iPhone Saat Ini
+                    <input required maxLength={40} className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.curr} onChange={(e) => setTradeForm({ ...tradeForm, curr: e.target.value })} />
+                  </label>
+                  <label className="block text-xs font-medium text-on-surface-variant">Kapasitas
+                    <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.storage} onChange={(e) => setTradeForm({ ...tradeForm, storage: e.target.value })}>
+                      {['64 GB', '128 GB', '256 GB', '512 GB', '1 TB'].map((value) => <option key={value}>{value}</option>)}
+                    </select>
+                  </label>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="block text-xs font-medium text-on-surface-variant">Battery Health (%)
+                    <input required type="number" min="1" max="100" className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.bh.replace('%', '')} onChange={(e) => setTradeForm({ ...tradeForm, bh: e.target.value ? `${e.target.value}%` : '' })} />
+                  </label>
+                  <label className="block text-xs font-medium text-on-surface-variant">Kondisi Fisik
+                    <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.condition} onChange={(e) => setTradeForm({ ...tradeForm, condition: e.target.value })}>
+                      <option>Mulus 99% • Fullset Box</option>
+                      <option>Mulus 95% • Batangan Unit Only</option>
+                      <option>Ada Dent Kecil • Fullset</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="block text-xs font-medium text-on-surface-variant">Target Upgrade
+                  <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.target} onChange={(e) => setTradeForm({ ...tradeForm, target: e.target.value })}>
+                    <option value="iPhone 15 Pro Max 256GB">iPhone 15 Pro Max 256GB</option>
+                    {!isCatalogDemo && products.filter((p) => p.isReady).map((p) => <option key={p.id} value={`${p.name} ${p.storage} (${p.color})`}>{p.name} {p.storage} · {p.color}</option>)}
+                    <option value="Seri lain (konsultasi)">Seri lain (konsultasi)</option>
+                  </select>
+                </label>
+                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm">Ajukan Estimasi via WhatsApp</button>
+              </form>
+            ) : (
+              <form className="space-y-3.5" onSubmit={handleSell}>
+                <label className="block text-xs font-medium text-on-surface-variant">Model &amp; Seri
+                  <input required maxLength={60} placeholder="Contoh: iPhone 13 Pro 256GB" className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.model} onChange={(e) => setSellForm({ ...sellForm, model: e.target.value })} />
+                </label>
+                <label className="block text-xs font-medium text-on-surface-variant">Status Garansi Asal
+                  <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.origin} onChange={(e) => setSellForm({ ...sellForm, origin: e.target.value })}>
+                    <option>Resmi iBox / Digimap (PA/A, ID/A)</option>
+                    <option>Inter All Provider Terdaftar Bea Cukai</option>
+                    <option>Lainnya</option>
+                  </select>
+                </label>
+                <label className="block text-xs font-medium text-on-surface-variant">Kondisi &amp; Minus (Jika Ada)
+                  <textarea maxLength={180} rows={2} placeholder="BH, fungsi Face ID, lecet, kelengkapan..." className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.desc} onChange={(e) => setSellForm({ ...sellForm, desc: e.target.value })} />
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="block text-xs font-medium text-on-surface-variant">Metode Pencairan
+                    <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.method} onChange={(e) => setSellForm({ ...sellForm, method: e.target.value })}>
+                      <option>Transfer Bank Instan (BCA / Mandiri / BRI)</option>
+                      <option>Tunai / Cash di Toko</option>
+                    </select>
+                  </label>
+                  <label className="block text-xs font-medium text-on-surface-variant">Nomor WhatsApp Anda
+                    <input required type="tel" inputMode="tel" maxLength={16} placeholder="08xxxxxxxxxx" className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.phone} onChange={(e) => setSellForm({ ...sellForm, phone: e.target.value })} />
+                  </label>
+                </div>
+                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm">Minta Penawaran via WhatsApp</button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* DETAIL MODAL */}
       {selectedProduct && (
@@ -1383,7 +1313,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2">
+            {!isCatalogDemo && <div className="pt-2">
               <a
                 className="w-full py-3 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-label-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99] text-center"
                 href={createDetailModalWaUrl(selectedProduct)}
@@ -1393,7 +1323,7 @@ export const App: React.FC = () => {
                 <span className="material-symbols-outlined text-[18px]">chat</span>
                 Konfirmasi &amp; Ambil Unit via WhatsApp
               </a>
-            </div>
+            </div>}
           </div>
         </div>
       )}
