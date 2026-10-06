@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { sanitizeInput, sanitizePhone, hashPin, constantTimeCompare, ClientRateLimiter } from './utils/security';
+import { usePresence, useReveal, useScrollProgress } from './motion';
 
 const rateLimiter = new ClientRateLimiter(5, 60000);
 const DEFAULT_PIN_HASH = '275a59d9c2cf1a57c55c70c0c6e1fc3a5c6d36e2f1837e2898c8c4e4f7a1f592'; // hash of default pin "123456"
@@ -253,14 +254,16 @@ export const App: React.FC = () => {
   const [activeSeries, setActiveSeries] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeModalImageIndex, setActiveModalImageIndex] = useState<number>(0);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [isFsOpen, setIsFsOpen] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   // Service Estimation Modals
-  const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
-  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [estimasiOpen, setEstimasiOpen] = useState(false);
+  const [estimasiMode, setEstimasiMode] = useState<'trade' | 'sell'>('trade');
 
   // Form State with strict sanitization
   const [tradeForm, setTradeForm] = useState({
@@ -292,6 +295,14 @@ export const App: React.FC = () => {
       return matchCond && matchSeries && matchSearch;
     });
   }, [products, activeCondition, activeSeries, searchQuery]);
+
+  // ---- Motion ----
+  const estimasiModal = usePresence(estimasiOpen, 340);
+  const detailModal = usePresence(isDetailOpen, 340);
+  const adminModal = usePresence(isAdminOpen, 340);
+  const fsModal = usePresence(isFsOpen, 280);
+  const { progress: scrollProgress, scrolled } = useScrollProgress();
+  useReveal([filteredProducts]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -400,7 +411,7 @@ export const App: React.FC = () => {
       `Mohon rincian estimasi penambahan dan ketersediaan stok di toko.`
     );
     window.open(`https://wa.me/628976747272?text=${text}`, '_blank', 'noopener,noreferrer');
-    setIsTradeModalOpen(false);
+    setEstimasiOpen(false);
   };
 
   const handleSell = (e: React.FormEvent) => {
@@ -423,33 +434,33 @@ export const App: React.FC = () => {
       `Berapa estimasi penawaran harga terbaik dari Kedai Gadget?`
     );
     window.open(`https://wa.me/628976747272?text=${text}`, '_blank', 'noopener,noreferrer');
-    setIsSellModalOpen(false);
+    setEstimasiOpen(false);
   };
 
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-fixed">
       {/* HEADER */}
       <header className="sticky top-0 w-full z-50">
-        <div className="bg-surface/90 backdrop-blur-xl border-b border-outline-variant/40 shadow-[0_1px_8px_rgba(23,24,26,0.03)]">
+        <div className={`relative bg-surface/90 backdrop-blur-xl border-b border-outline-variant/40 transition-shadow duration-300 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
           <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 sm:gap-space-lg min-w-0">
               <a className="flex items-center gap-2 sm:gap-space-md group min-w-0" href="#">
-                <img alt="Kedai Gadget Brand Logo" className="h-8 sm:h-10 w-auto object-contain shrink-0" src="/logo.png" />
+                <img alt="Kedai Gadget Brand Logo" className="h-8 sm:h-10 w-auto object-contain shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-3" src="/logo.png" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-headline-sm text-sm sm:text-headline-sm tracking-tight text-primary font-bold truncate">KEDAI GADGET</span>
                 </div>
               </a>
             </div>
             <nav className="hidden lg:flex items-center gap-space-lg">
-              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#katalog">Katalog</a>
-              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#tukar-tambah">Tukar Tambah</a>
-              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#jual-iphone">Jual iPhone</a>
-              <a className="font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#keunggulan">Keunggulan</a>
+              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#katalog">Katalog</a>
+              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#tukar-tambah">Tukar Tambah</a>
+              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#jual-iphone">Jual iPhone</a>
+              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#keunggulan">Keunggulan</a>
             </nav>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsAdminOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-space-md sm:py-space-xs rounded bg-surface-container-low border border-outline-variant/60 font-label-sm text-[11px] sm:text-label-sm text-on-surface hover:bg-surface-container hover:text-on-surface transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-space-md sm:py-space-xs rounded bg-surface-container-low border border-outline-variant/60 font-label-sm text-[11px] sm:text-label-sm text-on-surface hover:bg-surface-container hover:text-on-surface transition-all hover:-translate-y-0.5 active:scale-95"
                 title="Kelola Inventaris & Stok"
               >
                 <span className="material-symbols-outlined text-[16px] sm:text-[18px]">inventory_2</span>
@@ -457,6 +468,12 @@ export const App: React.FC = () => {
               </button>
             </div>
           </div>
+          {/* Scroll progress bar */}
+          <div
+            aria-hidden="true"
+            className="absolute left-0 bottom-0 h-[2px] w-full bg-secondary origin-left transition-transform duration-150 ease-linear"
+            style={{ transform: `scaleX(${scrollProgress})` }}
+          />
         </div>
       </header>
 
@@ -470,17 +487,38 @@ export const App: React.FC = () => {
             {/* 1. HERO SECTION (MINIMALIST & DIRECT) */}
             <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin py-8 sm:py-12">
               <div className="max-w-3xl space-y-4">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-xs font-semibold">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                <div
+                  className="kg-fade-up inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-xs font-semibold"
+                  style={{ '--kg-delay': '40ms' } as React.CSSProperties}
+                >
+                  <span className="kg-badge-dot inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
                   Kedai Gadget • Penatih, Denpasar Timur
                 </div>
                 <h1 className="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-tight">
-                  Katalog Kedai Gadget
+                  {['Katalog', 'Kedai', 'Gadget'].map((word, i) => (
+                    <React.Fragment key={word}>
+                      {i > 0 && ' '}
+                      <span className="inline-block overflow-hidden align-bottom">
+                        <span
+                          className="kg-hero-word inline-block"
+                          style={{ '--kg-delay': `${140 + i * 90}ms` } as React.CSSProperties}
+                        >
+                          {word}
+                        </span>
+                      </span>
+                    </React.Fragment>
+                  ))}
                 </h1>
-                <p className="font-body-lg text-sm sm:text-base text-on-surface-variant max-w-xl leading-relaxed">
+                <p
+                  className="kg-fade-up font-body-lg text-sm sm:text-base text-on-surface-variant max-w-xl leading-relaxed"
+                  style={{ '--kg-delay': '460ms' } as React.CSSProperties}
+                >
                   Unit Berkualitas Sudah Lolos Quality Control
                 </p>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
+                <div
+                  className="kg-fade-up flex flex-wrap items-center gap-3 pt-2"
+                  style={{ '--kg-delay': '560ms' } as React.CSSProperties}
+                >
                   <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all shadow-sm" href="#katalog">
                     <span className="material-symbols-outlined text-[18px]">devices</span>
                     Pilih Unit
@@ -498,7 +536,7 @@ export const App: React.FC = () => {
           <section className="w-full bg-surface-container-lowest py-8 sm:py-space-xl" id="katalog">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-5 sm:space-y-space-lg">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-space-md">
-                <div>
+                <div className="kg-reveal">
                   <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Kedai Katalog</h2>
                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">{isCatalogDemo ? 'Contoh tampilan katalog. Stok dan harga perlu dikonfirmasi sebelum transaksi.' : 'Pembaruan stok harian. Foto unit, harga dan kondisi ditampilkan transparan.'}</p>
                 </div>
@@ -506,7 +544,7 @@ export const App: React.FC = () => {
                   <div className="relative flex items-center">
                     <span className="material-symbols-outlined absolute left-3 text-outline text-[20px]">search</span>
                     <input
-                      className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded bg-surface-container-low text-primary placeholder:text-outline font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest shadow-sm transition-all"
+                      className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded bg-surface-container-low text-primary placeholder:text-outline font-body-sm text-xs sm:text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-secondary/50 shadow-sm transition-all"
                       placeholder="Cari tipe, warna, atau kapasitas..."
                       type="text"
                       value={searchQuery}
@@ -522,7 +560,7 @@ export const App: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     onClick={() => setActiveCondition('all')}
-                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all ${
+                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all active:scale-95 ${
                       activeCondition === 'all'
                         ? 'bg-primary text-on-primary shadow-sm'
                         : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
@@ -532,7 +570,7 @@ export const App: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveCondition('second')}
-                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all ${
+                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all active:scale-95 ${
                       activeCondition === 'second'
                         ? 'bg-primary text-on-primary shadow-sm'
                         : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
@@ -542,7 +580,7 @@ export const App: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveCondition('bnib')}
-                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all ${
+                    className={`px-3 py-1.5 sm:px-space-md sm:py-1.5 rounded-full font-label-md text-xs sm:text-label-md transition-all active:scale-95 ${
                       activeCondition === 'bnib'
                         ? 'bg-primary text-on-primary shadow-sm'
                         : 'bg-surface-container-high text-on-surface-variant hover:text-primary'
@@ -570,7 +608,7 @@ export const App: React.FC = () => {
                     <button
                       key={s.key}
                       onClick={() => setActiveSeries(s.key)}
-                      className={`px-3 py-1 rounded font-label-sm text-xs sm:text-label-sm transition-colors ${
+                      className={`px-3 py-1 rounded font-label-sm text-xs sm:text-label-sm transition-all active:scale-95 ${
                         activeSeries === s.key
                           ? 'bg-surface-container-highest text-primary font-semibold'
                           : 'bg-surface-container text-on-surface-variant hover:text-primary'
@@ -588,7 +626,7 @@ export const App: React.FC = () => {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-outline-variant/30"
+                    className="kg-reveal product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-outline-variant/30"
                   >
                     <div>
                       <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center">
@@ -626,7 +664,7 @@ export const App: React.FC = () => {
                       </div>
                        <div className={`grid gap-2 ${isCatalogDemo ? '' : 'grid-cols-2'}`}>
                         <button
-                          onClick={() => setSelectedProduct(p)}
+                          onClick={() => { setSelectedProduct(p); setActiveModalImageIndex(0); setIsDetailOpen(true); }}
                           className="py-2 px-2.5 rounded bg-surface-container-high text-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-surface-dim transition-all text-center"
                         >
                            Lihat Detail
@@ -646,7 +684,7 @@ export const App: React.FC = () => {
               </div>
 
               {/* Request Banner */}
-              <div className="p-4 sm:p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-space-md border border-outline-variant/30">
+              <div className="kg-reveal p-4 sm:p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-space-md border border-outline-variant/30">
                 <div className="space-y-0.5">
                   <p className="font-headline-sm text-sm sm:text-headline-sm font-bold text-primary">Tidak menemukan varian atau warna yang dicari?</p>
                   <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Hubungi kami via WhatsApp untuk mencari unit terkurasi yang sudah lolos quality control.</p>
@@ -667,7 +705,7 @@ export const App: React.FC = () => {
           {/* 3. SERVICES SECTION: TUKAR TAMBAH & JUAL IPHONE */}
           <section className="w-full bg-surface py-10 sm:py-16" id="tukar-tambah">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
-              <div className="text-center max-w-xl mx-auto space-y-1">
+              <div className="kg-reveal text-center max-w-xl mx-auto space-y-1">
                 <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Layanan Cepat</span>
                 <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Tukar Tambah &amp; Jual iPhone</h2>
                 <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Taksiran jujur berbasis kondisi riil. Cek fisik 15 menit langsung beres.</p>
@@ -675,9 +713,9 @@ export const App: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
                 {/* TEASER CARD: TUKAR TAMBAH */}
-                <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors">
+                <div className="kg-reveal group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors">
                   <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-6">
                       <span className="material-symbols-outlined text-[22px]">swap_horiz</span>
                     </div>
                     <div>
@@ -689,8 +727,8 @@ export const App: React.FC = () => {
                   </div>
                   <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
-                      onClick={() => setIsTradeModalOpen(true)}
-                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+                      onClick={() => { setEstimasiMode('trade'); setEstimasiOpen(true); }}
+                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[16px]">calculate</span>
                       Mulai Estimasi Tukar Tambah
@@ -699,9 +737,9 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* TEASER CARD: JUAL IPHONE */}
-                <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors" id="jual-iphone">
+                <div className="kg-reveal group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors" id="jual-iphone">
                   <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:rotate-6">
                       <span className="material-symbols-outlined text-[22px]">payments</span>
                     </div>
                     <div>
@@ -713,8 +751,8 @@ export const App: React.FC = () => {
                   </div>
                   <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
-                      onClick={() => setIsSellModalOpen(true)}
-                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+                      onClick={() => { setEstimasiMode('sell'); setEstimasiOpen(true); }}
+                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[16px]">monetization_on</span>
                       Mulai Estimasi Jual iPhone
@@ -728,39 +766,39 @@ export const App: React.FC = () => {
           {/* 4. VALUE PROPOSITION: KEUNGGULAN LAYANAN */}
           <section className="w-full bg-surface-container-lowest py-10 sm:py-16 border-t border-outline-variant/30" id="keunggulan">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
-              <div className="text-center max-w-xl mx-auto space-y-1">
+              <div className="kg-reveal text-center max-w-xl mx-auto space-y-1">
                 <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Standar Pelayanan</span>
                 <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Keunggulan Layanan</h2>
                 <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Jaminan keamanan dan transparansi belanja di Kedai Gadget.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
-                  <span className="material-symbols-outlined text-[24px] text-primary">schedule</span>
+                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">schedule</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Buka 24 Jam</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Konsultasi dan jadwal COD fleksibel kapan pun di seluruh wilayah Bali.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
-                  <span className="material-symbols-outlined text-[24px] text-secondary">verified</span>
+                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="material-symbols-outlined text-[24px] text-secondary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">verified</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Lolos QC</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Uji menyeluruh layar, kamera, TrueTone, Face ID, dan kesehatan baterai.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
-                  <span className="material-symbols-outlined text-[24px] text-primary">signal_cellular_alt</span>
+                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">signal_cellular_alt</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Sinyal Permanen</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Garansi sinyal permanen khusus unit resmi iBox dan Bea Cukai; tidak berlaku untuk Inter All Operator.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
-                  <span className="material-symbols-outlined text-[24px] text-primary">local_shipping</span>
+                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">local_shipping</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">COD Seluruh Bali</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Cek fisik dan fungsi sepuasnya di tempat sebelum melakukan pembayaran.
@@ -772,7 +810,7 @@ export const App: React.FC = () => {
 
           {/* 5. LOCATION STRIP */}
           <section className="w-full bg-surface py-8 border-t border-outline-variant/30" id="lokasi">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div className="kg-reveal max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
               <div>
                 <p className="font-headline-sm text-sm font-bold text-primary">Basis Operasional: Penatih, Denpasar Timur</p>
                 <p className="font-body-sm text-xs text-on-surface-variant mt-0.5">Sistem Online &amp; Cash on Delivery (COD) langsung se-Bali.</p>
@@ -793,7 +831,7 @@ export const App: React.FC = () => {
 
       {/* FOOTER */}
       <footer className="w-full bg-surface-container-lowest border-t border-outline-variant/30 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
+        <div className="kg-reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
           <div className="flex items-center gap-2">
             <img alt="Kedai Gadget" className="h-6 w-auto object-contain" src="/logo.png" />
             <span className="font-bold text-primary">KEDAI GADGET</span>
@@ -811,7 +849,7 @@ export const App: React.FC = () => {
       </footer>
 
       {/* FLOATING WHATSAPP BUTTON */}
-      <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40">
+      <div className="kg-fab fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40">
         <a
           className="group flex items-center gap-2 bg-primary text-on-primary pl-3.5 pr-4 py-2.5 rounded-full shadow-[0_8px_30px_rgba(23,24,26,0.2)] border border-outline-variant/40 hover:bg-primary-container transition-all active:scale-95"
           href="https://wa.me/628976747272"
@@ -828,20 +866,29 @@ export const App: React.FC = () => {
       </div>
 
       {/* ESTIMASI LAYANAN */}
-      {(isTradeModalOpen || isSellModalOpen) && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-primary/60 p-0 sm:p-4" onClick={() => { setIsTradeModalOpen(false); setIsSellModalOpen(false); }}>
-          <div role="dialog" aria-modal="true" aria-labelledby="estimasi-title" className="bg-surface-container-lowest rounded-t-xl sm:rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      {estimasiModal.visible && (
+        <div
+          className={`kg-modal-overlay fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-primary/60 p-0 sm:p-4 ${estimasiModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setEstimasiOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="estimasi-title"
+            className={`kg-modal-panel bg-surface-container-lowest rounded-t-xl sm:rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl ${estimasiModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between gap-3 mb-5">
               <div>
                 <p className="font-label-sm text-xs uppercase tracking-widest text-secondary mb-1">Estimasi via WhatsApp</p>
-                <h2 id="estimasi-title" className="font-headline-sm text-xl font-bold text-primary">{isTradeModalOpen ? 'Tukar Tambah iPhone' : 'Jual iPhone'}</h2>
+                <h2 id="estimasi-title" className="font-headline-sm text-xl font-bold text-primary">{estimasiMode === 'trade' ? 'Tukar Tambah iPhone' : 'Jual iPhone'}</h2>
                 <p className="font-body-sm text-xs text-on-surface-variant mt-1">Isi detail unit. Penawaran final setelah cek fisik.</p>
               </div>
-              <button type="button" className="w-9 h-9 shrink-0 rounded-full bg-surface-container-high flex items-center justify-center" aria-label="Tutup estimasi" onClick={() => { setIsTradeModalOpen(false); setIsSellModalOpen(false); }}>
+              <button type="button" className="w-9 h-9 shrink-0 rounded-full bg-surface-container-high hover:bg-surface-dim hover:rotate-90 flex items-center justify-center transition-all duration-300" aria-label="Tutup estimasi" onClick={() => setEstimasiOpen(false)}>
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
-            {isTradeModalOpen ? (
+            {estimasiMode === 'trade' ? (
               <form className="space-y-3.5" onSubmit={handleTradeIn}>
                 <div className="grid grid-cols-2 gap-3">
                   <label className="block text-xs font-medium text-on-surface-variant">iPhone Saat Ini
@@ -872,7 +919,7 @@ export const App: React.FC = () => {
                     <option value="Seri lain (konsultasi)">Seri lain (konsultasi)</option>
                   </select>
                 </label>
-                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm">Ajukan Estimasi via WhatsApp</button>
+                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all active:scale-[0.98]">Ajukan Estimasi via WhatsApp</button>
               </form>
             ) : (
               <form className="space-y-3.5" onSubmit={handleSell}>
@@ -900,7 +947,7 @@ export const App: React.FC = () => {
                     <input required type="tel" inputMode="tel" maxLength={16} placeholder="08xxxxxxxxxx" className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={sellForm.phone} onChange={(e) => setSellForm({ ...sellForm, phone: e.target.value })} />
                   </label>
                 </div>
-                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm">Minta Penawaran via WhatsApp</button>
+                <button type="submit" className="w-full py-3 rounded bg-primary text-on-primary font-label-md text-sm hover:bg-primary-container transition-all active:scale-[0.98]">Minta Penawaran via WhatsApp</button>
               </form>
             )}
           </div>
@@ -908,13 +955,13 @@ export const App: React.FC = () => {
       )}
 
       {/* DETAIL MODAL */}
-      {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-4 sm:p-space-lg shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4 border border-outline-variant/40">
+      {detailModal.visible && selectedProduct && (
+        <div className={`kg-modal-overlay fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/50 backdrop-blur-sm ${detailModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-4 sm:p-space-lg shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4 border border-outline-variant/40 ${detailModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
             <button
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim flex items-center justify-center text-primary transition-all z-10"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim hover:rotate-90 flex items-center justify-center text-primary transition-all duration-300 z-10"
               onClick={() => {
-                setSelectedProduct(null);
+                setIsDetailOpen(false);
                 setActiveModalImageIndex(0);
               }}
             >
@@ -965,7 +1012,7 @@ export const App: React.FC = () => {
               return (
                 <div className="space-y-2.5">
                   <div
-                    onClick={() => setFullscreenImage(currentImg)}
+                    onClick={() => { setFullscreenImage(currentImg); setIsFsOpen(true); }}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
@@ -1116,11 +1163,11 @@ export const App: React.FC = () => {
       )}
 
       {/* SECURITY VAULT & STOCK MANAGEMENT MODAL */}
-      {isAdminOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-5 sm:p-space-lg shadow-2xl relative max-h-[85vh] sm:max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-space-md border border-outline-variant/60">
+      {adminModal.visible && (
+        <div className={`kg-modal-overlay fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/60 backdrop-blur-md ${adminModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-5 sm:p-space-lg shadow-2xl relative max-h-[85vh] sm:max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-space-md border border-outline-variant/60 ${adminModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
             <button
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim flex items-center justify-center text-primary transition-all z-10"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim hover:rotate-90 flex items-center justify-center text-primary transition-all duration-300 z-10"
               onClick={() => {
                 setIsAdminOpen(false);
                 setIsAdminAuthenticated(false);
@@ -1275,7 +1322,7 @@ export const App: React.FC = () => {
       )}
 
       {/* FULLSCREEN IMAGE LIGHTBOX MODAL WITH SWIPE & ARROWS */}
-      {fullscreenImage && selectedProduct && (
+      {fsModal.visible && fullscreenImage && selectedProduct && (
         (() => {
           const gallery = selectedProduct.images && selectedProduct.images.length > 0 
             ? selectedProduct.images 
@@ -1325,16 +1372,16 @@ export const App: React.FC = () => {
 
           return (
             <div 
-              className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-2 sm:p-4 animate-fade-in select-none"
-              onClick={() => setFullscreenImage(null)}
+              className={`kg-modal-overlay fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-2 sm:p-4 select-none ${fsModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}
+              onClick={() => setIsFsOpen(false)}
               onTouchStart={handleFsTouchStart}
               onTouchMove={handleFsTouchMove}
               onTouchEnd={handleFsTouchEnd}
             >
               <button
                 type="button"
-                onClick={() => setFullscreenImage(null)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors z-20"
+                onClick={() => setIsFsOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/40 hover:rotate-90 text-white transition-all duration-300 z-20"
                 title="Tutup Fullscreen"
               >
                 <span className="material-symbols-outlined text-[24px]">close</span>
@@ -1361,7 +1408,7 @@ export const App: React.FC = () => {
               <img
                 src={fullscreenImage}
                 alt="Fullscreen view"
-                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl pointer-events-none"
+                className={`max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${fsModal.phase === 'open' ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
               />
 
               {/* Next Arrow */}
