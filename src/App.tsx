@@ -591,7 +591,7 @@ export const App: React.FC = () => {
                     className="product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-outline-variant/30"
                   >
                     <div>
-                      <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center p-3 sm:p-space-md">
+                      <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center">
                         <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-[10px] sm:text-label-sm font-semibold shadow-sm">
                            {isCatalogDemo ? 'Contoh Unit' : p.gradeBadge}
                         </span>
@@ -601,7 +601,7 @@ export const App: React.FC = () => {
                         <img
                           src={p.image}
                           alt={p.name}
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
                         />
                       </div>
@@ -975,7 +975,7 @@ export const App: React.FC = () => {
                     <img
                       src={currentImg}
                       alt={selectedProduct.name}
-                      className="w-full h-full object-contain p-2 group-hover:scale-[1.02] transition-transform duration-300 pointer-events-none"
+                      className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-300 pointer-events-none"
                     />
 
                     {/* Navigation Arrows for Non-Fullscreen (Desktop/Tablet) */}
