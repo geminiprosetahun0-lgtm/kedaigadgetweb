@@ -1,9 +1,10 @@
+$ErrorActionPreference = 'Stop'
 $ftpBase = "ftp://163.223.227.8/"
 $userDeployer = "deployer@kedaigadget.web.id"
-$userWeb = "deployweb@kedaigadget.web.id"
-$pass = "Naran@1303"
-$credDeployer = New-Object System.Net.NetworkCredential($userDeployer, $pass)
-$credWeb = New-Object System.Net.NetworkCredential($userWeb, $pass)
+$userBot = "botdeploy@kedaigadget.web.id"
+if (-not $env:KEDAI_FTP_PASSWORD) { throw 'Set KEDAI_FTP_PASSWORD sebelum deploy.' }
+$credDeployer = New-Object System.Net.NetworkCredential($userDeployer, $env:KEDAI_FTP_PASSWORD)
+$credBot = New-Object System.Net.NetworkCredential($userBot, $env:KEDAI_FTP_PASSWORD)
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $localDist = Join-Path $projectRoot "dist"
@@ -54,33 +55,14 @@ foreach ($f in $distFiles) {
 }
 Write-Host ">>> Frontend sukses terupload!" -ForegroundColor Green
 
-# 2. Upload Backend via deployweb into deployer/ folder (where Node.js runs)
+# 2. Upload compiled backend into active Node.js application root
 Write-Host ">>> [2/2] Mengunggah Backend & Bot Telegram..." -ForegroundColor Cyan
-Ensure-Dir $credWeb ($ftpBase + "deployer/dist-server/")
-Ensure-Dir $credWeb ($ftpBase + "deployer/server/")
-Ensure-Dir $credWeb ($ftpBase + "deployer/tmp/")
-
-$backendFiles = Get-ChildItem -Path (Join-Path $projectRoot "dist-server") -File
+$backendFiles = Get-ChildItem -Path (Join-Path $projectRoot "dist-server") -File -Filter '*.js'
 foreach ($f in $backendFiles) {
     $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
-    Upload-Raw $credWeb ($ftpBase + "deployer/dist-server/" + $f.Name) $bytes
+    Upload-Raw $credBot ($ftpBase + "dist-server/" + $f.Name) $bytes
 }
-
-$serverJson = Join-Path $projectRoot "server\products.json"
-if (Test-Path $serverJson) {
-    $pBytes = [System.IO.File]::ReadAllBytes($serverJson)
-    Upload-Raw $credWeb ($ftpBase + "deployer/server/products.json") $pBytes
-    Upload-Raw $credWeb ($ftpBase + "deployer/dist-server/products.json") $pBytes
-}
-
-$pkgJson = Join-Path $projectRoot "package.json"
-if (Test-Path $pkgJson) {
-    $pkgBytes = [System.IO.File]::ReadAllBytes($pkgJson)
-    Upload-Raw $credWeb ($ftpBase + "deployer/package.json") $pkgBytes
-}
-
-# Restart Passenger automatically
 $rstBytes = [System.Text.Encoding]::UTF8.GetBytes("restart " + [System.DateTime]::UtcNow.ToString())
-Upload-Raw $credWeb ($ftpBase + "deployer/tmp/restart.txt") $rstBytes
+Upload-Raw $credBot ($ftpBase + "tmp/restart.txt") $rstBytes
 
 Write-Host ">>> DEPLOY SELESAI! Frontend dan Backend berhasil diperbarui secara otomatis." -ForegroundColor Green
