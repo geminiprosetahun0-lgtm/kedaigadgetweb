@@ -475,10 +475,10 @@ export const App: React.FC = () => {
                   Kedai Gadget • Penatih, Denpasar Timur
                 </div>
                 <h1 className="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-tight">
-                  Katalog iPhone Kurasi Bali.
+                  Katalog Kedai Gadget
                 </h1>
                 <p className="font-body-lg text-sm sm:text-base text-on-surface-variant max-w-xl leading-relaxed">
-                  Unit pilihan lolos QC 32-titik, Battery Health prima, IMEI terjamin resmi. Siap COD seluruh Bali 24 jam nonstop.
+                  Unit Berkualitas Sudah Lolos Quality Control
                 </p>
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all shadow-sm" href="#katalog">
@@ -499,8 +499,7 @@ export const App: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-5 sm:space-y-space-lg">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-space-md">
                 <div>
-                  <div className="font-label-sm text-[11px] sm:text-label-sm uppercase tracking-widest text-secondary font-semibold">Inventory Live Feed</div>
-                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Katalog Unit Kurasi</h2>
+                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Kedai Katalog</h2>
                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">{isCatalogDemo ? 'Contoh tampilan katalog. Stok dan harga perlu dikonfirmasi sebelum transaksi.' : 'Pembaruan stok harian. Foto unit, harga dan kondisi ditampilkan transparan.'}</p>
                 </div>
                 <div className="w-full md:w-80">
@@ -746,7 +745,7 @@ export const App: React.FC = () => {
 
                 <div className="p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2">
                   <span className="material-symbols-outlined text-[24px] text-secondary">verified</span>
-                  <h3 className="font-headline-sm text-sm font-bold text-primary">Lolos QC 32-Titik</h3>
+                  <h3 className="font-headline-sm text-sm font-bold text-primary">Lolos QC</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Uji menyeluruh layar, kamera, TrueTone, Face ID, dan kesehatan baterai.
                   </p>
@@ -756,7 +755,7 @@ export const App: React.FC = () => {
                   <span className="material-symbols-outlined text-[24px] text-primary">signal_cellular_alt</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Sinyal Permanen</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
-                    Legalitas terdaftar resmi iBox atau Bea Cukai All Operator seumur hidup.
+                    Garansi sinyal permanen khusus unit resmi iBox dan Bea Cukai; tidak berlaku untuk Inter All Operator.
                   </p>
                 </div>
 
