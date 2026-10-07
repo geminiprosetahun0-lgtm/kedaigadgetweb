@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -75,6 +75,109 @@ html {
   }
 }
 
+/* ===== ReactBits-inspired keyframes ===== */
+
+/* Aurora / drifting gradient blobs (reactbits Aurora Background) */
+@keyframes kg-aurora-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(60px, -40px) scale(1.1); }
+  66%  { transform: translate(-40px, 30px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Shimmer / Shiny Button sweep (reactbits Shiny Button) */
+@keyframes kg-shimmer-sweep {
+  0%   { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(250%)  skewX(-20deg); }
+}
+
+/* Text animate: per-character reveal (reactbits Text Animate) */
+@keyframes kg-char-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0.5em) rotateX(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+/* Gradient text flowing (reactbits Gradient Text) */
+@keyframes kg-gradient-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Card tilt glow on hover (reactbits SpotLight Card) */
+@keyframes kg-spotlight-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.7; }
+}
+
+/* Marquee scroll for trust strip (reactbits Marquee) */
+@keyframes kg-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Floating element gentle bob */
+@keyframes kg-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* Counting number shimmer (reactbits Counter) */
+@keyframes kg-counter-glow {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50%      { text-shadow: 0 0 20px rgba(60,103,76,0.25); }
+}
+
+/* Scale-in blur for modal panels (reactbits Animated Content) */
+@keyframes kg-scale-blur-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Bouncing badge indicator */
+@keyframes kg-badge-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* Rotating ring loader */
+@keyframes kg-rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Shimmering skeleton placeholder */
+@keyframes kg-skeleton {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Ripple effect on click */
+@keyframes kg-ripple {
+  0%   { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Scroll-driven progress (reactbits Scroll Progress) */
+@keyframes kg-progress-grow {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
 /* ================= Hero entrance (mount, no JS gating) ================= */
 .kg-fade-up {
   animation: kg-fade-up 700ms var(--kg-ease) both;
@@ -89,6 +192,215 @@ html {
 }
 .kg-fab {
   animation: kg-bounce-in 700ms var(--kg-ease) 950ms both;
+}
+
+/* ===== ReactBits-inspired utility classes ===== */
+
+/* Aurora Background â€” floating gradient blobs behind hero */
+.kg-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.kg-aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  will-change: transform;
+  animation: kg-aurora-drift 18s ease-in-out infinite;
+}
+.kg-aurora-blob:nth-child(1) {
+  top: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #3c674c, transparent 70%);
+  animation-duration: 22s;
+}
+.kg-aurora-blob:nth-child(2) {
+  top: 10%;
+  right: -15%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #baebc8, transparent 70%);
+  animation-duration: 28s;
+  animation-delay: -4s;
+}
+.kg-aurora-blob:nth-child(3) {
+  bottom: -25%;
+  left: 30%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #bdeecb, transparent 70%);
+  animation-duration: 25s;
+  animation-delay: -8s;
+}
+
+/* Shiny Button â€” shimmer sweep on hover */
+.kg-shiny-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.kg-shiny-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-20deg);
+  pointer-events: none;
+  z-index: 1;
+}
+.kg-shiny-btn:hover::before {
+  animation: kg-shimmer-sweep 0.9s ease-out;
+}
+
+/* Gradient Text â€” flowing animated gradient */
+.kg-gradient-text {
+  background: linear-gradient(
+    90deg,
+    #000000,
+    #3c674c,
+    #baebc8,
+    #3c674c,
+    #000000
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: kg-gradient-flow 4s linear infinite;
+}
+
+/* Text Animate â€” per-character reveal */
+.kg-text-animate span {
+  display: inline-block;
+  opacity: 0;
+  animation: kg-char-rise 600ms var(--kg-ease) both;
+  animation-delay: calc(var(--char-i, 0) * 40ms);
+}
+
+/* SpotLight Card â€” mouse-follow radial glow */
+.kg-spotlight {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.kg-spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle 200px at var(--mx, 50%) var(--my, 50%),
+    rgba(60,103,76, 0.12),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.kg-spotlight:hover::after {
+  opacity: 1;
+}
+.kg-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Marquee â€” horizontal scroll loop */
+.kg-marquee {
+  display: flex;
+  width: max-content;
+  animation: kg-marquee 25s linear infinite;
+}
+.kg-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Floating element */
+.kg-float {
+  animation: kg-float 4s ease-in-out infinite;
+}
+
+/* Counter glow */
+.kg-counter {
+  animation: kg-counter-glow 3s ease-in-out infinite;
+}
+
+/* Scale-blur-in (for modal/section entrances) */
+.kg-scale-blur-in {
+  animation: kg-scale-blur-in 500ms var(--kg-ease) both;
+}
+
+/* Bouncing badge */
+.kg-badge-bounce {
+  animation: kg-badge-bounce 1.5s ease-in-out infinite;
+}
+
+/* Rotating ring */
+.kg-rotate {
+  animation: kg-rotate 1s linear infinite;
+}
+
+/* Skeleton shimmer */
+.kg-skeleton {
+  background: linear-gradient(
+    90deg,
+    #eeeeec 25%,
+    #f4f4f2 50%,
+    #eeeeec 75%
+  );
+  background-size: 200% 100%;
+  animation: kg-skeleton 1.5s ease-in-out infinite;
+}
+
+/* Ripple on click */
+.kg-ripple-host {
+  position: relative;
+  overflow: hidden;
+}
+.kg-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(60,103,76, 0.3);
+  transform: scale(0);
+  pointer-events: none;
+  animation: kg-ripple 600ms ease-out forwards;
+  z-index: 2;
+}
+/* Ripple adapts to dark buttons */
+.bg-primary .kg-ripple,
+.bg-primary-container .kg-ripple,
+[class*='bg-primary/'] .kg-ripple {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* 3D Tilt card (reactbits Tilt Card) */
+.kg-tilt {
+  transform-style: preserve-3d;
+  transition: transform 200ms ease;
+}
+.kg-tilt-child {
+  transform: translateZ(30px);
+}
+
+/* Scroll progress bar (enhanced) */
+.kg-scroll-progress {
+  transform-origin: left center;
+  background: linear-gradient(90deg, #3c674c, #baebc8, #3c674c);
+  background-size: 200% 100%;
+  animation: kg-gradient-flow 3s linear infinite;
 }
 
 /* ================= Scroll reveal ================= */
@@ -137,6 +449,183 @@ html {
   transform: scaleX(1);
 }
 
+/* =================================================================== */
+/* MICRO-INTERACTIONS (detail level)                                    */
+/* =================================================================== */
+
+/* ---- Custom cursor (disabled â€” native cursor retained) ---- */
+.kg-cursor-root {
+  display: none !important;
+}
+
+/* ---- 3D tilt on hover (delegated via useMicroInteractions) ---- */
+.kg-tilt-hover {
+  --rx: 0deg;
+  --ry: 0deg;
+  --ty: 0px;
+  transform: perspective(900px) translateY(var(--ty))
+    rotateX(var(--rx)) rotateY(var(--ry));
+  transition-property: opacity, translate, transform, border-color, box-shadow;
+  transition-duration: 550ms, 550ms, 250ms, 320ms, 320ms;
+  transition-timing-function: var(--kg-ease);
+  transition-delay: var(--stagger, 0ms), var(--stagger, 0ms), 0ms, 0ms, 0ms;
+  will-change: transform;
+}
+.kg-tilt-hover:hover {
+  --ty: -6px;
+}
+
+/* ---- Product card: deep hover detail ---- */
+.product-card:hover {
+  border-color: rgba(60,103,76, 0.45);
+  box-shadow: 0 18px 40px -18px rgba(23, 24, 26, 0.35),
+    0 0 0 1px rgba(60,103,76, 0.22);
+}
+.product-card:hover img {
+  transform: scale(1.07);
+}
+.product-card img {
+  transition: transform 600ms var(--kg-ease), opacity 500ms ease;
+}
+.kg-img-fade {
+  animation: kg-img-in 550ms ease both;
+}
+@keyframes kg-img-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Badges pop in when card mounts */
+@keyframes kg-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-6px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06) translateY(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.kg-pop {
+  animation: kg-pop-in 480ms var(--kg-ease-back) both;
+  animation-delay: var(--kg-delay, 250ms);
+}
+
+/* Action buttons lift with staggered delay on card hover */
+.kg-card-actions > * {
+  transition: transform 320ms var(--kg-ease), box-shadow 320ms ease,
+    background-color 320ms ease;
+}
+.product-card:hover .kg-card-actions > * {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -8px rgba(23, 24, 26, 0.45);
+}
+.product-card:hover .kg-card-actions > *:nth-child(2) {
+  transition-delay: 50ms;
+}
+
+/* Price turns into flowing gradient on card hover */
+.kg-price {
+  transition: color 300ms ease;
+}
+.product-card:hover .kg-price {
+  background: linear-gradient(
+    90deg,
+    #1a1c1b,
+    #3c674c,
+    #baebc8,
+    #3c674c,
+    #1a1c1b
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: kg-gradient-flow 2.4s linear infinite;
+}
+
+/* ---- Input focus glow ---- */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(60,103,76, 0.35),
+    0 0 18px -6px rgba(60,103,76, 0.7);
+  transition: box-shadow 250ms var(--kg-ease), background-color 250ms ease;
+}
+input:focus::placeholder,
+textarea:focus::placeholder {
+  opacity: 0.55;
+  transition: opacity 250ms ease;
+}
+
+/* ---- Modal content: auto staggered rise per direct child ---- */
+@keyframes kg-stagger-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+.kg-scale-blur-in > * {
+  animation: kg-stagger-in 480ms var(--kg-ease) both;
+}
+.kg-scale-blur-in > *:nth-child(1) { animation-delay: 90ms; }
+.kg-scale-blur-in > *:nth-child(2) { animation-delay: 150ms; }
+.kg-scale-blur-in > *:nth-child(3) { animation-delay: 210ms; }
+.kg-scale-blur-in > *:nth-child(4) { animation-delay: 270ms; }
+.kg-scale-blur-in > *:nth-child(5) { animation-delay: 330ms; }
+.kg-scale-blur-in > *:nth-child(6) { animation-delay: 390ms; }
+.kg-scale-blur-in > *:nth-child(7) { animation-delay: 450ms; }
+.kg-scale-blur-in > *:nth-child(n + 8) { animation-delay: 500ms; }
+
+/* ---- Active nav link (scroll spy) ---- */
+.kg-nav-link {
+  transition: color 250ms ease;
+}
+.kg-nav-link.is-active {
+  color: #1a1c1b;
+}
+.kg-nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+/* ---- Checklist / benefit items: tick draws in ---- */
+@keyframes kg-tick-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---- Filter pills: spring pop when selected ---- */
+button[class*='rounded-full']:active {
+  transform: scale(0.94);
+}
+
+/* ---- Magnetic elements settle smoothly ---- */
+a[ref],
+.kg-magnetic {
+  transition: transform 350ms var(--kg-ease-back);
+}
+
+/* ---- Section headings underline draw ---- */
+.kg-gradient-text {
+  text-shadow: 0 0 30px rgba(60,103,76, 0.15);
+}
+
 /* ================= Accessibility ================= */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -156,9 +645,176 @@ html {
   }
   .kg-fade-up,
   .kg-hero-word,
-  .kg-fab {
+  .kg-fab,
+  .kg-aurora-blob,
+  .kg-shiny-btn::before,
+  .kg-text-animate span,
+  .kg-gradient-text,
+  .kg-float,
+  .kg-counter,
+  .kg-scale-blur-in,
+  .kg-badge-bounce,
+  .kg-rotate,
+  .kg-skeleton,
+  .kg-scroll-progress,
+  .kg-marquee,
+  .kg-pop,
+  .kg-img-fade,
+  .kg-cursor-root {
     opacity: 1 !important;
     animation: none !important;
     transform: none !important;
+  }
+  .kg-cursor-root {
+    display: none !important;
+  }
+}
+
+/* =================================================================== */
+/* GSAP ENHANCEMENTS â€” added on top of existing system                 */
+/* Based on: gsap-web, glassmorphism, micro-interaction skills         */
+/* =================================================================== */
+
+/* ---- Glassmorphism panels ---- */
+.kg-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.kg-glass-strong {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Edge highlight for glass cards */
+.kg-glass-edge::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  pointer-events: none;
+}
+
+/* ---- Shine sweep on product cards ---- */
+@keyframes kg-shine-sweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.product-card.kg-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card.kg-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.product-card.kg-shine:hover::after {
+  animation: kg-shine-sweep 0.8s ease;
+}
+
+/* ---- Animated mesh gradient background (for non-hero sections) ---- */
+@keyframes kg-mesh-shift {
+  0%   { background-position: 0% 50%, 100% 50%, 50% 0%; }
+  50%  { background-position: 100% 50%, 0% 50%, 50% 100%; }
+  100% { background-position: 0% 50%, 100% 50%, 50% 0%; }
+}
+
+.kg-mesh-bg {
+  background:
+    radial-gradient(at 20% 30%, rgba(60,103,76, 0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(186, 235, 200, 0.05) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(189, 238, 203, 0.04) 0px, transparent 50%);
+  background-size: 200% 200%, 200% 200%, 200% 200%;
+  animation: kg-mesh-shift 20s ease infinite;
+}
+
+/* ---- Glow pulse for CTA buttons ---- */
+@keyframes kg-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(60,103,76, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(60,103,76, 0.12); }
+}
+
+.kg-glow-cta {
+  animation: kg-glow-pulse 3s ease-in-out infinite;
+}
+
+/* ---- GSAP scroll progress bar ---- */
+.kg-gsap-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #3c674c, #baebc8, #3c674c);
+  background-size: 200% 100%;
+  transform-origin: left center;
+  z-index: 9999;
+  animation: kg-gradient-flow 3s linear infinite;
+}
+
+/* ---- Icon pulse for keunggulan section ---- */
+@keyframes kg-icon-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-4px) scale(1.1); }
+}
+
+.kg-icon-bounce {
+  animation: kg-icon-bounce 2.5s ease-in-out infinite;
+}
+
+/* ---- Marquee for iPhone series strip ---- */
+.kg-series-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.kg-series-marquee-track {
+  display: inline-flex;
+  gap: 1rem;
+  animation: kg-marquee 30s linear infinite;
+}
+
+.kg-series-marquee:hover .kg-series-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ---- Reduced motion additions ---- */
+@media (prefers-reduced-motion: reduce) {
+  .kg-glass,
+  .kg-glass-strong {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .kg-glow-cta,
+  .kg-icon-bounce,
+  .kg-mesh-bg,
+  .kg-series-marquee-track,
+  .kg-gsap-progress {
+    animation: none !important;
   }
 }

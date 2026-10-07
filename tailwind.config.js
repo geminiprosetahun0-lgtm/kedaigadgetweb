@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+﻿/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -73,18 +73,18 @@ export default {
         "margin": "3rem"
       },
       fontFamily: {
-        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
-        "body-md": ["DM Sans", "sans-serif"],
-        "label-md": ["DM Sans", "sans-serif"],
-        "label-sm": ["DM Sans", "sans-serif"],
-        "display-lg": ["Plus Jakarta Sans", "sans-serif"],
-        "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
-        "title-md": ["DM Sans", "sans-serif"],
-        "body-sm": ["DM Sans", "sans-serif"],
-        "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
-        "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
-        "body-lg": ["DM Sans", "sans-serif"],
-        "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"]
+        "headline-md": ["Space Grotesk", "sans-serif"],
+        "body-md": ["Inter", "sans-serif"],
+        "label-md": ["Inter", "sans-serif"],
+        "label-sm": ["Inter", "sans-serif"],
+        "display-lg": ["Space Grotesk", "sans-serif"],
+        "headline-lg-mobile": ["Space Grotesk", "sans-serif"],
+        "title-md": ["Inter", "sans-serif"],
+        "body-sm": ["Inter", "sans-serif"],
+        "headline-lg": ["Space Grotesk", "sans-serif"],
+        "headline-sm": ["Space Grotesk", "sans-serif"],
+        "body-lg": ["Inter", "sans-serif"],
+        "display-lg-mobile": ["Space Grotesk", "sans-serif"]
       },
       fontSize: {
         "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],

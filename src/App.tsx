@@ -1,6 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { sanitizeInput, sanitizePhone, hashPin, constantTimeCompare, ClientRateLimiter } from './utils/security';
-import { usePresence, useReveal, useScrollProgress } from './motion';
+import { usePresence, useReveal, useScrollProgress, useMagnetic, useCountUp, useTextSplit, useMicroInteractions, useScrollSpy } from './motion';
+import { useGSAPSmoothAnchor } from './useGSAP';
+import { ScrollToTop } from './components/ScrollToTop';
 
 const rateLimiter = new ClientRateLimiter(5, 60000);
 const DEFAULT_PIN_HASH = '275a59d9c2cf1a57c55c70c0c6e1fc3a5c6d36e2f1837e2898c8c4e4f7a1f592'; // hash of default pin "123456"
@@ -43,7 +45,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Grade A+ Like New',
-    desc: 'Natural Titanium • Garansi Resmi iBox s/d 2025',
+    desc: 'Natural Titanium â€¢ Garansi Resmi iBox s/d 2025',
     warranty: 'Resmi iBox Indonesia (PA/A)',
     completeness: 'Fullset Box OEM Original',
     storeGaransi: '90 Hari Toko + Resmi iBox Aktif',
@@ -63,7 +65,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'BNIB Segel Greenpeel',
-    desc: 'Blue Titanium • Garansi 1 Tahun Apple iBox',
+    desc: 'Blue Titanium â€¢ Garansi 1 Tahun Apple iBox',
     warranty: 'Resmi iBox Indonesia',
     completeness: 'Fullset Original Sealed',
     storeGaransi: '1 Tahun Apple Official + 90 Hari Toko',
@@ -83,7 +85,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1663499482523-1c0c1bae4ce1?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second Mulus 98%',
-    desc: 'Deep Purple • Dynamic Island Mulus Normal',
+    desc: 'Deep Purple â€¢ Dynamic Island Mulus Normal',
     warranty: 'Kemenperin Bea Cukai All Provider',
     completeness: 'Fullset Box Dus Buku',
     storeGaransi: '90 Hari Toko Kedai Gadget',
@@ -103,7 +105,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second Like New',
-    desc: 'Midnight • Layar Super Retina XDR Bening',
+    desc: 'Midnight â€¢ Layar Super Retina XDR Bening',
     warranty: 'Resmi Digimap Indonesia',
     completeness: 'Fullset Lengkap + Kabel OEM',
     storeGaransi: '90 Hari Garansi Hardware',
@@ -123,7 +125,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: false,
     image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second A+',
-    desc: 'Black • Layar Besar 6.7 Inch & Daya Tahan Ekstra',
+    desc: 'Black â€¢ Layar Besar 6.7 Inch & Daya Tahan Ekstra',
     warranty: 'Resmi iBox Indonesia',
     completeness: 'Fullset Original Box',
     storeGaransi: '90 Hari Toko Kedai Gadget',
@@ -143,7 +145,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1574755393849-623942496936?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second Mulus',
-    desc: 'Starlight • Fisik mulus bebas dent',
+    desc: 'Starlight â€¢ Fisik mulus bebas dent',
     warranty: 'Resmi iBox Indonesia',
     completeness: 'Fullset Lengkap',
     storeGaransi: '90 Hari Toko Kedai Gadget',
@@ -163,7 +165,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second A+ Like New',
-    desc: 'Sierra Blue • 120Hz ProMotion Layar Sehat',
+    desc: 'Sierra Blue â€¢ 120Hz ProMotion Layar Sehat',
     warranty: 'Resmi iBox Indonesia',
     completeness: 'Fullset Box Dus Buku Kabel',
     storeGaransi: '90 Hari Toko Kedai Gadget',
@@ -183,7 +185,7 @@ const PRODUCTS: ProductItem[] = [
     isReady: true,
     image: 'https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&w=800&q=80',
     gradeBadge: 'Second Like New',
-    desc: 'Graphite • All Sensor & LiDAR Normal',
+    desc: 'Graphite â€¢ All Sensor & LiDAR Normal',
     warranty: 'Resmi iBox Indonesia',
     completeness: 'Fullset Lengkap Box',
     storeGaransi: '90 Hari Toko Kedai Gadget',
@@ -270,7 +272,7 @@ export const App: React.FC = () => {
     curr: 'iPhone 11',
     storage: '128 GB',
     bh: '87%',
-    condition: 'Mulus 99% • Fullset Box',
+    condition: 'Mulus 99% â€¢ Fullset Box',
     target: 'iPhone 15 Pro Max 256GB',
   });
 
@@ -303,6 +305,40 @@ export const App: React.FC = () => {
   const fsModal = usePresence(isFsOpen, 280);
   const { progress: scrollProgress, scrolled } = useScrollProgress();
   useReveal([filteredProducts]);
+  // Global micro-interactions: spotlight tracking, 3D tilt, click ripple
+  useMicroInteractions();
+  // GSAP: cinematic smooth-scroll for anchor links
+  useGSAPSmoothAnchor();
+  // Which nav section is currently in view
+  const activeSection = useScrollSpy(['katalog', 'tukar-tambah', 'jual-iphone', 'keunggulan']);
+
+  // ---- ReactBits-inspired hooks ----
+  // Count-up stats for the value proposition / hero strip
+  const {
+    ref: unitsSoldRef,
+    value: unitsSoldValue,
+  } = useCountUp(420, 1600);
+  const {
+    ref: happyCustomersRef,
+    value: happyCustomersValue,
+  } = useCountUp(980, 1800);
+  const {
+    ref: yearsActiveRef,
+    value: yearsActiveValue,
+  } = useCountUp(5, 1200);
+  // Text split for animated hero title
+  const heroTitle = useTextSplit('Katalog Kedai Gadget');
+  // Magnetic pull for the primary CTA
+  const {
+    ref: heroCtaRef,
+    onMouseMove: heroCtaMove,
+    onMouseLeave: heroCtaLeave,
+  } = useMagnetic<HTMLAnchorElement>(0.25);
+  const {
+    ref: secondaryCtaRef,
+    onMouseMove: secondaryCtaMove,
+    onMouseLeave: secondaryCtaLeave,
+  } = useMagnetic<HTMLAnchorElement>(0.2);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -366,16 +402,16 @@ export const App: React.FC = () => {
   const createProductWaUrl = (p: ProductItem) => {
     const text = 
       `Halo Admin Kedai Gadget, apakah unit ini masih ada?\n\n` +
-      `📱 *Model:* ${p.name}\n` +
-      `💾 *Kapasitas:* ${p.storage}\n` +
-      `🎨 *Warna:* ${p.color}\n` +
-      `🔋 *Battery Health:* ${p.bh}\n` +
-      `✨ *Kondisi:* ${p.gradeBadge}\n` +
-      `🛡️ *Status IMEI:* ${p.warranty}\n` +
-      `📦 *Kelengkapan:* ${p.completeness}\n` +
-      `💰 *Harga:* ${formatRupiah(p.price)}\n` +
-      (p.minus ? `📋 *Detail:* ${p.minus}\n` : '') +
-      `🏷️ *Status Stok:* ${p.isReady ? 'Ready Stock' : 'Pre-Order / Booking'}\n\n` +
+      `ðŸ“± *Model:* ${p.name}\n` +
+      `ðŸ’¾ *Kapasitas:* ${p.storage}\n` +
+      `ðŸŽ¨ *Warna:* ${p.color}\n` +
+      `ðŸ”‹ *Battery Health:* ${p.bh}\n` +
+      `âœ¨ *Kondisi:* ${p.gradeBadge}\n` +
+      `ðŸ›¡ï¸ *Status IMEI:* ${p.warranty}\n` +
+      `ðŸ“¦ *Kelengkapan:* ${p.completeness}\n` +
+      `ðŸ’° *Harga:* ${formatRupiah(p.price)}\n` +
+      (p.minus ? `ðŸ“‹ *Detail:* ${p.minus}\n` : '') +
+      `ðŸ·ï¸ *Status Stok:* ${p.isReady ? 'Ready Stock' : 'Pre-Order / Booking'}\n\n` +
       `Apakah barang ini masih ready untuk transaksi COD area Penatih / Denpasar Timur atau se-Bali? Terima kasih.`;
     return `https://wa.me/628976747272?text=${encodeURIComponent(text)}`;
   };
@@ -383,13 +419,13 @@ export const App: React.FC = () => {
   const createDetailModalWaUrl = (p: ProductItem) => {
     const text = 
       `Halo Admin Kedai Gadget, apakah barang ini masih ada?\n\n` +
-      `📱 *Unit:* ${p.name} (${p.storage})\n` +
-      `🎨 *Warna:* ${p.color}\n` +
-      `💰 *Harga:* ${formatRupiah(p.price)}\n` +
-      `🔋 *Battery Health:* ${p.bh}\n` +
-      `🛡️ *Legalitas:* ${p.warranty}\n` +
-      `📦 *Kelengkapan:* ${p.completeness}\n` +
-      (p.minus ? `📋 *Detail:* ${p.minus}\n` : '') + `\n` +
+      `ðŸ“± *Unit:* ${p.name} (${p.storage})\n` +
+      `ðŸŽ¨ *Warna:* ${p.color}\n` +
+      `ðŸ’° *Harga:* ${formatRupiah(p.price)}\n` +
+      `ðŸ”‹ *Battery Health:* ${p.bh}\n` +
+      `ðŸ›¡ï¸ *Legalitas:* ${p.warranty}\n` +
+      `ðŸ“¦ *Kelengkapan:* ${p.completeness}\n` +
+      (p.minus ? `ðŸ“‹ *Detail:* ${p.minus}\n` : '') + `\n` +
       `Apakah unitnya masih tersedia untuk COD di Penatih, Denpasar Timur atau se-Bali? Terima kasih.`;
     return `https://wa.me/628976747272?text=${encodeURIComponent(text)}`;
   };
@@ -452,10 +488,10 @@ export const App: React.FC = () => {
               </a>
             </div>
             <nav className="hidden lg:flex items-center gap-space-lg">
-              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#katalog">Katalog</a>
-              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#tukar-tambah">Tukar Tambah</a>
-              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#jual-iphone">Jual iPhone</a>
-              <a className="kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#keunggulan">Keunggulan</a>
+              <a className={`kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors ${activeSection === 'katalog' ? 'is-active' : ''}`} href="#katalog">Katalog</a>
+              <a className={`kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors ${activeSection === 'tukar-tambah' ? 'is-active' : ''}`} href="#tukar-tambah">Tukar Tambah</a>
+              <a className={`kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors ${activeSection === 'jual-iphone' ? 'is-active' : ''}`} href="#jual-iphone">Jual iPhone</a>
+              <a className={`kg-nav-link font-label-md text-label-md py-space-xs text-on-surface-variant hover:text-on-surface transition-colors ${activeSection === 'keunggulan' ? 'is-active' : ''}`} href="#keunggulan">Keunggulan</a>
             </nav>
             <div className="flex items-center gap-2 shrink-0">
               <button
@@ -471,7 +507,7 @@ export const App: React.FC = () => {
           {/* Scroll progress bar */}
           <div
             aria-hidden="true"
-            className="absolute left-0 bottom-0 h-[2px] w-full bg-secondary origin-left transition-transform duration-150 ease-linear"
+            className="kg-scroll-progress absolute left-0 bottom-0 h-[2px] w-full origin-left transition-transform duration-150 ease-linear"
             style={{ transform: `scaleX(${scrollProgress})` }}
           />
         </div>
@@ -484,6 +520,17 @@ export const App: React.FC = () => {
           <div className="w-full relative overflow-hidden bg-surface">
             <div className="absolute inset-0 pointer-events-none opacity-40 [background-image:radial-gradient(#c6c6ca_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
+            {/* Aurora background â€” reactbits-inspired drifting gradient blobs (parallax on scroll) */}
+            <div
+              className="kg-aurora"
+              aria-hidden="true"
+              style={{ transform: `translateY(${scrollProgress * 180}px)` }}
+            >
+              <div className="kg-aurora-blob"></div>
+              <div className="kg-aurora-blob"></div>
+              <div className="kg-aurora-blob"></div>
+            </div>
+
             {/* 1. HERO SECTION (MINIMALIST & DIRECT) */}
             <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin py-8 sm:py-12">
               <div className="max-w-3xl space-y-4">
@@ -491,23 +538,15 @@ export const App: React.FC = () => {
                   className="kg-fade-up inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-xs font-semibold"
                   style={{ '--kg-delay': '40ms' } as React.CSSProperties}
                 >
-                  <span className="kg-badge-dot inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                  Kedai Gadget • Penatih, Denpasar Timur
+                  <span className="kg-badge-dot kg-badge-bounce inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Kedai Gadget â€¢ Penatih, Denpasar Timur
                 </div>
                 <h1 className="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight leading-tight">
-                  {['Katalog', 'Kedai', 'Gadget'].map((word, i) => (
-                    <React.Fragment key={word}>
-                      {i > 0 && ' '}
-                      <span className="inline-block overflow-hidden align-bottom">
-                        <span
-                          className="kg-hero-word inline-block"
-                          style={{ '--kg-delay': `${140 + i * 90}ms` } as React.CSSProperties}
-                        >
-                          {word}
-                        </span>
-                      </span>
-                    </React.Fragment>
-                  ))}
+                  <span className="kg-text-animate" aria-label="Katalog Kedai Gadget">
+                    {heroTitle.map((c) => (
+                      <span key={c.key} style={c.style}>{c.char}</span>
+                    ))}
+                  </span>
                 </h1>
                 <p
                   className="kg-fade-up font-body-lg text-sm sm:text-base text-on-surface-variant max-w-xl leading-relaxed"
@@ -519,17 +558,47 @@ export const App: React.FC = () => {
                   className="kg-fade-up flex flex-wrap items-center gap-3 pt-2"
                   style={{ '--kg-delay': '560ms' } as React.CSSProperties}
                 >
-                  <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all shadow-sm" href="#katalog">
+                  <a
+                    ref={heroCtaRef}
+                    onMouseMove={heroCtaMove}
+                    onMouseLeave={heroCtaLeave}
+                    className="kg-shiny-btn inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-colors shadow-sm"
+                    href="#katalog"
+                  >
                     <span className="material-symbols-outlined text-[18px]">devices</span>
                     Pilih Unit
                   </a>
-                  <a className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-surface-container-lowest text-on-surface font-label-md text-xs sm:text-sm hover:bg-surface-container transition-all border border-outline-variant/40" href="#tukar-tambah">
+                  <a
+                    ref={secondaryCtaRef}
+                    onMouseMove={secondaryCtaMove}
+                    onMouseLeave={secondaryCtaLeave}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded bg-surface-container-lowest text-on-surface font-label-md text-xs sm:text-sm hover:bg-surface-container transition-all border border-outline-variant/40"
+                    href="#tukar-tambah"
+                  >
                     <span className="material-symbols-outlined text-[18px] text-secondary">swap_horiz</span>
                     Tukar Tambah / Jual
                   </a>
                 </div>
               </div>
             </section>
+
+            {/* Stats strip â€” reactbits-inspired count-up counters */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin pb-8 sm:pb-10">
+              <div className="kg-fade-up grid grid-cols-3 gap-3 max-w-2xl" style={{ '--kg-delay': '700ms' } as React.CSSProperties}>
+                <div className="text-center sm:text-left">
+                  <span ref={unitsSoldRef} className="kg-counter font-headline-lg text-2xl sm:text-3xl font-bold text-primary block">+{unitsSoldValue}</span>
+                  <span className="font-label-sm text-[10px] sm:text-label-sm text-on-surface-variant uppercase tracking-wider">Unit Terjual</span>
+                </div>
+                <div className="text-center">
+                  <span ref={happyCustomersRef} className="kg-counter font-headline-lg text-2xl sm:text-3xl font-bold text-secondary block">+{happyCustomersValue}</span>
+                  <span className="font-label-sm text-[10px] sm:text-label-sm text-on-surface-variant uppercase tracking-wider">Pelanggan Puas</span>
+                </div>
+                <div className="text-center sm:text-right">
+                  <span ref={yearsActiveRef} className="kg-counter font-headline-lg text-2xl sm:text-3xl font-bold text-primary block">{yearsActiveValue}</span>
+                  <span className="font-label-sm text-[10px] sm:text-label-sm text-on-surface-variant uppercase tracking-wider">Tahun Aktif</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* 2. CATALOG SECTION */}
@@ -537,7 +606,9 @@ export const App: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-5 sm:space-y-space-lg">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-space-md">
                 <div className="kg-reveal">
-                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold text-primary tracking-tight">Kedai Katalog</h2>
+                  <h2 className="font-headline-lg text-2xl sm:text-headline-lg font-bold tracking-tight">
+                    <span className="kg-gradient-text">Kedai Katalog</span>
+                  </h2>
                    <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">{isCatalogDemo ? 'Contoh tampilan katalog. Stok dan harga perlu dikonfirmasi sebelum transaksi.' : 'Pembaruan stok harian. Foto unit, harga dan kondisi ditampilkan transparan.'}</p>
                 </div>
                 <div className="w-full md:w-80">
@@ -626,22 +697,35 @@ export const App: React.FC = () => {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="kg-reveal product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-outline-variant/30"
+                    className="kg-reveal kg-spotlight kg-tilt-hover product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between transition-all duration-300 border border-outline-variant/30"
                   >
                     <div>
                       <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center">
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-[10px] sm:text-label-sm font-semibold shadow-sm">
+                        <span
+                          className="kg-pop absolute top-2 left-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-[10px] sm:text-label-sm font-semibold shadow-sm"
+                          style={{ '--kg-delay': '300ms' } as React.CSSProperties}
+                        >
                            {isCatalogDemo ? 'Contoh Unit' : p.gradeBadge}
                         </span>
-                        <span className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/80 backdrop-blur-sm text-secondary font-label-sm text-[10px] sm:text-label-sm font-bold">
-                           <span className="text-[7px]">●</span> {isCatalogDemo ? 'Stok belum tersedia' : p.statusText}
+                        <span
+                          className="kg-pop absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/80 backdrop-blur-sm text-secondary font-label-sm text-[10px] sm:text-label-sm font-bold"
+                          style={{ '--kg-delay': '380ms' } as React.CSSProperties}
+                        >
+                           <span className="text-[7px] kg-badge-bounce">â—</span> {isCatalogDemo ? 'Stok belum tersedia' : p.statusText}
                         </span>
                         <img
                           src={p.image}
                           alt={p.name}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          className="kg-img-fade w-full h-full object-cover object-center"
                           loading="lazy"
                         />
+                        {/* Hover overlay hint */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/55 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-center pb-3">
+                          <span className="kg-pop translate-y-2 group-hover:translate-y-0 transition-transform duration-300 px-3 py-1 rounded-full bg-surface-container-lowest/95 text-primary font-label-sm text-[10px] font-bold shadow-md inline-flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[13px]">zoom_in</span>
+                            Lihat Detail
+                          </span>
+                        </div>
                       </div>
                       <div className="pt-3 sm:pt-space-md space-y-1.5">
                         <div className="flex items-center justify-between">
@@ -659,10 +743,10 @@ export const App: React.FC = () => {
 
                     <div className="pt-3 mt-3 border-t border-surface-container">
                       <div className="flex items-baseline gap-2 mb-2.5">
-                        <span className="font-headline-sm text-base sm:text-headline-sm font-bold text-primary">{formatRupiah(p.price)}</span>
+                        <span className="kg-price font-headline-sm text-base sm:text-headline-sm font-bold text-primary">{formatRupiah(p.price)}</span>
                         <span className="font-body-sm text-[11px] sm:text-body-sm text-outline line-through">{formatRupiah(p.originalPrice)}</span>
                       </div>
-                       <div className={`grid gap-2 ${isCatalogDemo ? '' : 'grid-cols-2'}`}>
+                       <div className={`grid gap-2 kg-card-actions ${isCatalogDemo ? '' : 'grid-cols-2'}`}>
                         <button
                           onClick={() => { setSelectedProduct(p); setActiveModalImageIndex(0); setIsDetailOpen(true); }}
                           className="py-2 px-2.5 rounded bg-surface-container-high text-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-surface-dim transition-all text-center"
@@ -670,7 +754,7 @@ export const App: React.FC = () => {
                            Lihat Detail
                         </button>
                          {!isCatalogDemo && <a
-                          className="py-2 px-2.5 rounded bg-primary text-on-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-1"
+                          className="kg-shiny-btn py-2 px-2.5 rounded bg-primary text-on-primary font-label-sm text-xs sm:text-label-sm font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-1"
                           href={createProductWaUrl(p)}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -684,13 +768,13 @@ export const App: React.FC = () => {
               </div>
 
               {/* Request Banner */}
-              <div className="kg-reveal p-4 sm:p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-space-md border border-outline-variant/30">
+              <div className="kg-reveal kg-spotlight p-4 sm:p-space-lg rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-space-md border border-outline-variant/30">
                 <div className="space-y-0.5">
                   <p className="font-headline-sm text-sm sm:text-headline-sm font-bold text-primary">Tidak menemukan varian atau warna yang dicari?</p>
                   <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant">Hubungi kami via WhatsApp untuk mencari unit terkurasi yang sudah lolos quality control.</p>
                 </div>
                 <a
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-4 py-2.5 sm:px-space-lg sm:py-space-sm rounded bg-primary text-on-primary font-label-md text-xs sm:text-label-md hover:bg-primary-container transition-all text-nowrap shadow-sm text-center"
+                  className="kg-shiny-btn w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-4 py-2.5 sm:px-space-lg sm:py-space-sm rounded bg-primary text-on-primary font-label-md text-xs sm:text-label-md hover:bg-primary-container transition-all text-nowrap shadow-sm text-center"
                   href="https://wa.me/628976747272?text=Halo%20Kedai%20Gadget%2C%20saya%20ingin%20request%20unit%20khusus"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -707,15 +791,17 @@ export const App: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
               <div className="kg-reveal text-center max-w-xl mx-auto space-y-1">
                 <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Layanan Cepat</span>
-                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Tukar Tambah &amp; Jual iPhone</h2>
+                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold tracking-tight">
+                  <span className="kg-gradient-text">Tukar Tambah</span> &amp; <span className="kg-gradient-text">Jual iPhone</span>
+                </h2>
                 <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Taksiran jujur berbasis kondisi riil. Cek fisik 15 menit langsung beres.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
                 {/* TEASER CARD: TUKAR TAMBAH */}
-                <div className="kg-reveal group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors">
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors">
                   <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-6">
+                    <div className="kg-float w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:-rotate-6">
                       <span className="material-symbols-outlined text-[22px]">swap_horiz</span>
                     </div>
                     <div>
@@ -728,7 +814,7 @@ export const App: React.FC = () => {
                   <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
                       onClick={() => { setEstimasiMode('trade'); setEstimasiOpen(true); }}
-                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
+                      className="kg-shiny-btn w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[16px]">calculate</span>
                       Mulai Estimasi Tukar Tambah
@@ -737,9 +823,9 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* TEASER CARD: JUAL IPHONE */}
-                <div className="kg-reveal group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors" id="jual-iphone">
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-1.5 hover:shadow-lg transition-colors" id="jual-iphone">
                   <div className="space-y-3">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:rotate-6">
+                    <div className="kg-float w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:rotate-6" style={{ animationDelay: '0.5s' }}>
                       <span className="material-symbols-outlined text-[22px]">payments</span>
                     </div>
                     <div>
@@ -752,7 +838,7 @@ export const App: React.FC = () => {
                   <div className="pt-5 mt-4 border-t border-surface-container">
                     <button
                       onClick={() => { setEstimasiMode('sell'); setEstimasiOpen(true); }}
-                      className="w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
+                      className="kg-shiny-btn w-full py-2.5 px-4 rounded bg-primary text-on-primary font-label-md text-xs sm:text-sm hover:bg-primary-container transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
                     >
                       <span className="material-symbols-outlined text-[16px]">monetization_on</span>
                       Mulai Estimasi Jual iPhone
@@ -768,37 +854,39 @@ export const App: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin space-y-8">
               <div className="kg-reveal text-center max-w-xl mx-auto space-y-1">
                 <span className="font-label-sm text-xs uppercase tracking-widest text-secondary font-semibold">Standar Pelayanan</span>
-                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">Keunggulan Layanan</h2>
+                <h2 className="font-headline-lg text-2xl sm:text-3xl font-bold tracking-tight">
+                  <span className="kg-gradient-text">Keunggulan Layanan</span>
+                </h2>
                 <p className="font-body-md text-xs sm:text-sm text-on-surface-variant">Jaminan keamanan dan transparansi belanja di Kedai Gadget.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
-                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">schedule</span>
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="kg-float material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">schedule</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Buka 24 Jam</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Konsultasi dan jadwal COD fleksibel kapan pun di seluruh wilayah Bali.
                   </p>
                 </div>
 
-                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
-                  <span className="material-symbols-outlined text-[24px] text-secondary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">verified</span>
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="kg-float material-symbols-outlined text-[24px] text-secondary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1" style={{ animationDelay: '0.3s' }}>verified</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Lolos QC</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Uji menyeluruh layar, kamera, TrueTone, Face ID, dan kesehatan baterai.
                   </p>
                 </div>
 
-                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
-                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">signal_cellular_alt</span>
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="kg-float material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1" style={{ animationDelay: '0.6s' }}>signal_cellular_alt</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">Sinyal Permanen</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Garansi sinyal permanen khusus unit resmi iBox dan Bea Cukai; tidak berlaku untuk Inter All Operator.
                   </p>
                 </div>
 
-                <div className="kg-reveal group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
-                  <span className="material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1">local_shipping</span>
+                <div className="kg-reveal kg-spotlight kg-tilt-hover group p-5 rounded-xl bg-surface border border-outline-variant/30 space-y-2 hover:-translate-y-1.5 hover:shadow-md transition-all">
+                  <span className="kg-float material-symbols-outlined text-[24px] text-primary inline-block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1" style={{ animationDelay: '0.9s' }}>local_shipping</span>
                   <h3 className="font-headline-sm text-sm font-bold text-primary">COD Seluruh Bali</h3>
                   <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                     Cek fisik dan fungsi sepuasnya di tempat sebelum melakukan pembayaran.
@@ -819,7 +907,7 @@ export const App: React.FC = () => {
                 href="https://wa.me/628976747272"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-surface-container-high text-primary font-label-md text-xs hover:bg-surface-dim transition-colors"
+                className="kg-shiny-btn inline-flex items-center gap-1.5 px-4 py-2 rounded bg-surface-container-high text-primary font-label-md text-xs hover:bg-surface-dim transition-colors"
               >
                 <span className="material-symbols-outlined text-[16px]">chat</span>
                 Jadwalkan COD via WhatsApp
@@ -830,28 +918,43 @@ export const App: React.FC = () => {
       </main>
 
       {/* FOOTER */}
-      <footer className="w-full bg-surface-container-lowest border-t border-outline-variant/30 py-8">
+      <footer className="w-full bg-surface-container-lowest border-t border-outline-variant/30 py-8 overflow-hidden">
+        {/* Marquee trust strip */}
+        <div className="kg-reveal border-b border-outline-variant/30 pb-4 mb-4 overflow-hidden select-none" aria-hidden="true">
+          <div className="kg-marquee text-lg font-headline-sm font-bold text-outline/50 whitespace-nowrap">
+            {Array.from({ length: 2 }).map((_, dup) => (
+              <span key={dup} className="inline-flex gap-8 pr-8">
+                {['Garansi IMEI Seumur Hidup', 'Lolos QC 30 Titik', 'COD Seluruh Bali', 'Buka 24 Jam', 'Tukar Tambah Instant', 'Harga Transparan'].map((m) => (
+                  <span key={`${dup}-${m}`} className="inline-flex items-center gap-8">
+                    {m}
+                    <span className="text-secondary">âœ¦</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
         <div className="kg-reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-margin flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
           <div className="flex items-center gap-2">
-            <img alt="Kedai Gadget" className="h-6 w-auto object-contain" src="/logo.png" />
-            <span className="font-bold text-primary">KEDAI GADGET</span>
-            <span className="text-outline/40">•</span>
+            <img alt="Kedai Gadget" className="h-6 w-auto object-contain transition-transform duration-300 hover:scale-110 hover:-rotate-3" src="/logo.png" />
+            <span className="kg-gradient-text font-bold">KEDAI GADGET</span>
+            <span className="text-outline/40">â€¢</span>
             <span>Penatih, Denpasar Timur, Bali</span>
           </div>
           <div className="flex items-center gap-5">
-            <a href="#katalog" className="hover:text-primary transition-colors">Katalog</a>
-            <a href="#tukar-tambah" className="hover:text-primary transition-colors">Tukar Tambah</a>
-            <a href="#keunggulan" className="hover:text-primary transition-colors">Keunggulan</a>
-            <a href="https://www.instagram.com/kedaigadgett" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@kedaigadgett</a>
+            <a href="#katalog" className="kg-nav-link hover:text-primary transition-colors">Katalog</a>
+            <a href="#tukar-tambah" className="kg-nav-link hover:text-primary transition-colors">Tukar Tambah</a>
+            <a href="#keunggulan" className="kg-nav-link hover:text-primary transition-colors">Keunggulan</a>
+            <a href="https://www.instagram.com/kedaigadgett" target="_blank" rel="noopener noreferrer" className="kg-nav-link hover:text-primary transition-colors">@kedaigadgett</a>
           </div>
-          <p>© {new Date().getFullYear()} Kedai Gadget. All rights reserved.</p>
+          <p>Â© {new Date().getFullYear()} Kedai Gadget. All rights reserved.</p>
         </div>
       </footer>
 
       {/* FLOATING WHATSAPP BUTTON */}
       <div className="kg-fab fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40">
         <a
-          className="group flex items-center gap-2 bg-primary text-on-primary pl-3.5 pr-4 py-2.5 rounded-full shadow-[0_8px_30px_rgba(23,24,26,0.2)] border border-outline-variant/40 hover:bg-primary-container transition-all active:scale-95"
+          className="kg-shiny-btn kg-float group flex items-center gap-2 bg-primary text-on-primary pl-3.5 pr-4 py-2.5 rounded-full shadow-[0_8px_30px_rgba(23,24,26,0.2)] border border-outline-variant/40 hover:bg-primary-container transition-all active:scale-95"
           href="https://wa.me/628976747272"
           rel="noopener noreferrer"
           target="_blank"
@@ -875,7 +978,7 @@ export const App: React.FC = () => {
             role="dialog"
             aria-modal="true"
             aria-labelledby="estimasi-title"
-            className={`kg-modal-panel bg-surface-container-lowest rounded-t-xl sm:rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl ${estimasiModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}
+            className={`kg-modal-panel bg-surface-container-lowest rounded-t-xl sm:rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl ${estimasiModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100 kg-scale-blur-in' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3 mb-5">
@@ -906,16 +1009,16 @@ export const App: React.FC = () => {
                   </label>
                   <label className="block text-xs font-medium text-on-surface-variant">Kondisi Fisik
                     <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.condition} onChange={(e) => setTradeForm({ ...tradeForm, condition: e.target.value })}>
-                      <option>Mulus 99% • Fullset Box</option>
-                      <option>Mulus 95% • Batangan Unit Only</option>
-                      <option>Ada Dent Kecil • Fullset</option>
+                      <option>Mulus 99% â€¢ Fullset Box</option>
+                      <option>Mulus 95% â€¢ Batangan Unit Only</option>
+                      <option>Ada Dent Kecil â€¢ Fullset</option>
                     </select>
                   </label>
                 </div>
                 <label className="block text-xs font-medium text-on-surface-variant">Target Upgrade
                   <select className="mt-1 w-full p-2.5 rounded bg-surface-container-low text-primary" value={tradeForm.target} onChange={(e) => setTradeForm({ ...tradeForm, target: e.target.value })}>
                     <option value="iPhone 15 Pro Max 256GB">iPhone 15 Pro Max 256GB</option>
-                    {!isCatalogDemo && products.filter((p) => p.isReady).map((p) => <option key={p.id} value={`${p.name} ${p.storage} (${p.color})`}>{p.name} {p.storage} · {p.color}</option>)}
+                    {!isCatalogDemo && products.filter((p) => p.isReady).map((p) => <option key={p.id} value={`${p.name} ${p.storage} (${p.color})`}>{p.name} {p.storage} Â· {p.color}</option>)}
                     <option value="Seri lain (konsultasi)">Seri lain (konsultasi)</option>
                   </select>
                 </label>
@@ -957,7 +1060,7 @@ export const App: React.FC = () => {
       {/* DETAIL MODAL */}
       {detailModal.visible && selectedProduct && (
         <div className={`kg-modal-overlay fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/50 backdrop-blur-sm ${detailModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}>
-          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-4 sm:p-space-lg shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4 border border-outline-variant/40 ${detailModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
+          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-4 sm:p-space-lg shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4 border border-outline-variant/40 ${detailModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100 kg-scale-blur-in' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
             <button
               className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim hover:rotate-90 flex items-center justify-center text-primary transition-all duration-300 z-10"
               onClick={() => {
@@ -1051,7 +1154,7 @@ export const App: React.FC = () => {
                       <span className="material-symbols-outlined text-[18px]">fullscreen</span>
                     </div>
                     <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-primary/80 backdrop-blur-sm text-on-primary font-label-sm text-[10px]">
-                      Foto {activeModalImageIndex + 1} / {totalImages} {totalImages > 1 ? '• Geser ↔' : ''}
+                      Foto {activeModalImageIndex + 1} / {totalImages} {totalImages > 1 ? 'â€¢ Geser â†”' : ''}
                     </div>
                   </div>
 
@@ -1085,7 +1188,7 @@ export const App: React.FC = () => {
                 {selectedProduct.name}
               </h3>
               <p className="font-body-sm text-xs sm:text-body-sm text-on-surface-variant">
-                {selectedProduct.color} • {selectedProduct.storage}
+                {selectedProduct.color} â€¢ {selectedProduct.storage}
               </p>
             </div>
 
@@ -1165,7 +1268,7 @@ export const App: React.FC = () => {
       {/* SECURITY VAULT & STOCK MANAGEMENT MODAL */}
       {adminModal.visible && (
         <div className={`kg-modal-overlay fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-primary/60 backdrop-blur-md ${adminModal.phase === 'open' ? 'opacity-100' : 'opacity-0'}`}>
-          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-5 sm:p-space-lg shadow-2xl relative max-h-[85vh] sm:max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-space-md border border-outline-variant/60 ${adminModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
+          <div className={`kg-modal-panel bg-surface-container-lowest rounded-t-2xl sm:rounded-xl max-w-2xl w-full p-5 sm:p-space-lg shadow-2xl relative max-h-[85vh] sm:max-h-[92vh] overflow-y-auto space-y-4 sm:space-y-space-md border border-outline-variant/60 ${adminModal.phase === 'open' ? 'opacity-100 translate-y-0 scale-100 kg-scale-blur-in' : 'opacity-0 translate-y-10 scale-[0.96] sm:translate-y-0'}`}>
             <button
               className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-dim hover:rotate-90 flex items-center justify-center text-primary transition-all duration-300 z-10"
               onClick={() => {
@@ -1244,7 +1347,7 @@ export const App: React.FC = () => {
                         <img src={item.image} alt={item.name} className="w-9 h-9 object-contain rounded bg-surface-container-low shrink-0" />
                         <div className="min-w-0">
                           <h4 className="font-label-md text-xs sm:text-label-md font-bold text-primary truncate">{item.name}</h4>
-                          <p className="text-[11px] text-on-surface-variant">{item.storage} • {item.color} • BH {item.bh}</p>
+                          <p className="text-[11px] text-on-surface-variant">{item.storage} â€¢ {item.color} â€¢ BH {item.bh}</p>
                         </div>
                       </div>
 
@@ -1293,7 +1396,7 @@ export const App: React.FC = () => {
                               : 'bg-surface-container-high text-outline hover:text-primary'
                           }`}
                         >
-                          <span className="text-[7px]">●</span>
+                          <span className="text-[7px]">â—</span>
                           {item.isReady ? 'Ready' : 'Habis'}
                         </button>
                       </div>
@@ -1389,7 +1492,7 @@ export const App: React.FC = () => {
 
               {/* Counter Indicator */}
               <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white font-label-sm text-xs z-20">
-                {activeModalImageIndex + 1} / {total} {total > 1 ? '• Geser ↔' : ''}
+                {activeModalImageIndex + 1} / {total} {total > 1 ? 'â€¢ Geser â†”' : ''}
               </div>
 
               {/* Prev Arrow */}
@@ -1426,6 +1529,9 @@ export const App: React.FC = () => {
           );
         })()
       )}
+
+      {/* Floating scroll-to-top (GSAP entrance) */}
+      <ScrollToTop />
     </div>
   );
 };
