@@ -131,7 +131,7 @@ html {
 /* Counting number shimmer (reactbits Counter) */
 @keyframes kg-counter-glow {
   0%, 100% { text-shadow: 0 0 0 transparent; }
-  50%      { text-shadow: 0 0 20px rgba(60,103,76,0.25); }
+  50%      { text-shadow: 0 0 20px rgba(37,99,235,0.25); }
 }
 
 /* Scale-in blur for modal panels (reactbits Animated Content) */
@@ -216,7 +216,7 @@ html {
   left: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, #3c674c, transparent 70%);
+  background: radial-gradient(circle, #2563eb, transparent 70%);
   animation-duration: 22s;
 }
 .kg-aurora-blob:nth-child(2) {
@@ -224,7 +224,7 @@ html {
   right: -15%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, #baebc8, transparent 70%);
+  background: radial-gradient(circle, #bfdbfe, transparent 70%);
   animation-duration: 28s;
   animation-delay: -4s;
 }
@@ -233,7 +233,7 @@ html {
   left: 30%;
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, #bdeecb, transparent 70%);
+  background: radial-gradient(circle, #dbeafe, transparent 70%);
   animation-duration: 25s;
   animation-delay: -8s;
 }
@@ -270,9 +270,9 @@ html {
   background: linear-gradient(
     90deg,
     #000000,
-    #3c674c,
-    #baebc8,
-    #3c674c,
+    #2563eb,
+    #bfdbfe,
+    #2563eb,
     #000000
   );
   background-size: 200% auto;
@@ -302,7 +302,7 @@ html {
   inset: 0;
   background: radial-gradient(
     circle 200px at var(--mx, 50%) var(--my, 50%),
-    rgba(60,103,76, 0.12),
+    rgba(37,99,235, 0.12),
     transparent 80%
   );
   opacity: 0;
@@ -373,7 +373,7 @@ html {
 .kg-ripple {
   position: absolute;
   border-radius: 50%;
-  background: rgba(60,103,76, 0.3);
+  background: rgba(37,99,235, 0.3);
   transform: scale(0);
   pointer-events: none;
   animation: kg-ripple 600ms ease-out forwards;
@@ -398,7 +398,7 @@ html {
 /* Scroll progress bar (enhanced) */
 .kg-scroll-progress {
   transform-origin: left center;
-  background: linear-gradient(90deg, #3c674c, #baebc8, #3c674c);
+  background: linear-gradient(90deg, #2563eb, #bfdbfe, #2563eb);
   background-size: 200% 100%;
   animation: kg-gradient-flow 3s linear infinite;
 }
@@ -438,7 +438,7 @@ html {
   bottom: -4px;
   height: 2px;
   width: 100%;
-  background: #3c674c;
+  background: #2563eb;
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left center;
@@ -477,9 +477,9 @@ html {
 
 /* ---- Product card: deep hover detail ---- */
 .product-card:hover {
-  border-color: rgba(60,103,76, 0.45);
+  border-color: rgba(37,99,235, 0.45);
   box-shadow: 0 18px 40px -18px rgba(23, 24, 26, 0.35),
-    0 0 0 1px rgba(60,103,76, 0.22);
+    0 0 0 1px rgba(37,99,235, 0.22);
 }
 .product-card:hover img {
   transform: scale(1.07);
@@ -539,9 +539,9 @@ html {
   background: linear-gradient(
     90deg,
     #1a1c1b,
-    #3c674c,
-    #baebc8,
-    #3c674c,
+    #2563eb,
+    #bfdbfe,
+    #2563eb,
     #1a1c1b
   );
   background-size: 200% auto;
@@ -556,8 +556,8 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(60,103,76, 0.35),
-    0 0 18px -6px rgba(60,103,76, 0.7);
+  box-shadow: 0 0 0 2px rgba(37,99,235, 0.35),
+    0 0 18px -6px rgba(37,99,235, 0.7);
   transition: box-shadow 250ms var(--kg-ease), background-color 250ms ease;
 }
 input:focus::placeholder,
@@ -623,7 +623,7 @@ a[ref],
 
 /* ---- Section headings underline draw ---- */
 .kg-gradient-text {
-  text-shadow: 0 0 30px rgba(60,103,76, 0.15);
+  text-shadow: 0 0 30px rgba(37,99,235, 0.15);
 }
 
 /* ================= Accessibility ================= */
@@ -715,7 +715,7 @@ a[ref],
   overflow: hidden;
 }
 
-.product-card.kg-shine::after {
+.product-card.kg-shine::before {
   content: '';
   position: absolute;
   top: 0; left: 0;
@@ -723,7 +723,8 @@ a[ref],
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.45) 50%,
+    rgba(147, 197, 253, 0.75) 50%,
+    rgba(255, 255, 255, 0.55) 55%,
     transparent 60%
   );
   transform: translateX(-100%) skewX(-15deg);
@@ -731,7 +732,7 @@ a[ref],
   z-index: 2;
 }
 
-.product-card.kg-shine:hover::after {
+.product-card.kg-shine:hover::before {
   animation: kg-shine-sweep 0.8s ease;
 }
 
@@ -744,7 +745,7 @@ a[ref],
 
 .kg-mesh-bg {
   background:
-    radial-gradient(at 20% 30%, rgba(60,103,76, 0.06) 0px, transparent 50%),
+    radial-gradient(at 20% 30%, rgba(37,99,235, 0.06) 0px, transparent 50%),
     radial-gradient(at 80% 20%, rgba(186, 235, 200, 0.05) 0px, transparent 50%),
     radial-gradient(at 50% 80%, rgba(189, 238, 203, 0.04) 0px, transparent 50%);
   background-size: 200% 200%, 200% 200%, 200% 200%;
@@ -753,8 +754,8 @@ a[ref],
 
 /* ---- Glow pulse for CTA buttons ---- */
 @keyframes kg-glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(60,103,76, 0); }
-  50%      { box-shadow: 0 0 0 6px rgba(60,103,76, 0.12); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(37,99,235, 0.12); }
 }
 
 .kg-glow-cta {
@@ -768,7 +769,7 @@ a[ref],
   left: 0;
   height: 3px;
   width: 100%;
-  background: linear-gradient(90deg, #3c674c, #baebc8, #3c674c);
+  background: linear-gradient(90deg, #2563eb, #bfdbfe, #2563eb);
   background-size: 200% 100%;
   transform-origin: left center;
   z-index: 9999;
@@ -795,7 +796,7 @@ a[ref],
 
 .kg-series-marquee-track {
   display: inline-flex;
-  gap: 1rem;
+  width: max-content;
   animation: kg-marquee 30s linear infinite;
 }
 

@@ -518,7 +518,10 @@ export const App: React.FC = () => {
         <div className="flex flex-col w-full">
           {/* Subtle Grain & Dot Atmosphere */}
           <div className="w-full relative overflow-hidden bg-surface">
-            <div className="absolute inset-0 pointer-events-none opacity-40 [background-image:radial-gradient(#c6c6ca_1px,transparent_1px)] [background-size:24px_24px]"></div>
+            <div
+              className="absolute inset-0 pointer-events-none opacity-40 [background-image:radial-gradient(#c6c6ca_1px,transparent_1px)] [background-size:24px_24px]"
+              style={{ transform: `translateY(${scrollProgress * -60}px)` }}
+            ></div>
 
             {/* Aurora background â€” reactbits-inspired drifting gradient blobs (parallax on scroll) */}
             <div
@@ -597,6 +600,22 @@ export const App: React.FC = () => {
                   <span ref={yearsActiveRef} className="kg-counter font-headline-lg text-2xl sm:text-3xl font-bold text-primary block">{yearsActiveValue}</span>
                   <span className="font-label-sm text-[10px] sm:text-label-sm text-on-surface-variant uppercase tracking-wider">Tahun Aktif</span>
                 </div>
+              </div>
+            </div>
+
+            {/* iPhone series marquee strip — auto-scroll, pause on hover */}
+            <div className="kg-series-marquee relative z-10 border-t border-outline-variant/20 py-2.5" aria-hidden="true">
+              <div className="kg-series-marquee-track">
+                {[0, 1].map((dup) => (
+                  <span key={dup} className="inline-flex shrink-0">
+                    {['iPhone 17 Pro Max', 'iPhone 17', 'iPhone 16 Pro', 'iPhone 16', 'iPhone 15 Pro', 'iPhone 15', 'iPhone 14', 'iPhone 13', 'iPhone SE', 'iPhone 12', 'iPhone 11'].map((m) => (
+                      <span key={`${dup}-${m}`} className="inline-flex items-center gap-1.5 px-5 text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant/60">
+                        <span className="material-symbols-outlined text-[13px] text-blue-600/70">smartphone</span>
+                        {m}
+                      </span>
+                    ))}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -697,7 +716,7 @@ export const App: React.FC = () => {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="kg-reveal kg-spotlight kg-tilt-hover product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between transition-all duration-300 border border-outline-variant/30"
+                    className="kg-reveal kg-spotlight kg-tilt-hover kg-shine product-card group bg-surface-container-lowest rounded-xl p-4 sm:p-space-md shadow-md flex flex-col justify-between transition-all duration-300 border border-outline-variant/30"
                   >
                     <div>
                       <div className="relative w-full aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center">
